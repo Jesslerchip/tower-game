@@ -1,6 +1,6 @@
 from random import randint
-
 import entity
+import mobs
 
 
 # Generates a new mob
