@@ -1,4 +1,5 @@
 import battle
+import player_classes
 import entity
 import player_classes
 
