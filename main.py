@@ -4,10 +4,9 @@ import entity
 import player_classes
 
 
-def create_player():
+def choose_class():
     chosen_class = None
     class_choice = ""
-    name = input("What is your name?\n")
     while class_choice != "warrior" and class_choice != "archer" and class_choice != "healer" \
             and class_choice != "thief":
         print("Classes: Warrior, Archer, Healer, Thief\n")
@@ -23,6 +22,12 @@ def create_player():
     else:
         print("Error: Invalid Class.")
 
+    return chosen_class
+
+
+def create_player():  # Creates a new player
+    name = input("What is your name?\n")
+    chosen_class = choose_class()
     new_player = entity.Player(name, chosen_class)
 
     return new_player

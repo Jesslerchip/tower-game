@@ -34,7 +34,7 @@ class Mob:
         self.level = floor
 
         # Stat value = base stat * level
-        self.name = stats[0] * self.level
+        self.name = stats[0]
         self.hp = stats[1] * self.level
         self.mana = stats[2] * self.level
         self.stamina = stats[3] * self.level
