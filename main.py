@@ -1,17 +1,13 @@
+import entity
 
 
+def create_player():
+    name = input("What is your name?\n")
+    chosen_class = entity.basic_class
+    new_player = entity.Player(name, chosen_class)
+
+    return new_player
 
 
-damage = 1
-mob_hp = 5
-
-print("Mob appeared!")
-
-while mob_hp > 0:
-    print("Mob's HP: " + str(mob_hp))
-    attack = input("Attack?\n")
-    if attack.lower() == "attack":
-        mob_hp -= damage
-        print("Mob took " + str(damage) + " damage!")
-
-print("Mob defeated!")
+player = create_player()
+print(player.name)
