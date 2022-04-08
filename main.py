@@ -1,3 +1,4 @@
+import battle
 import entity
 
 
@@ -10,4 +11,4 @@ def create_player():
 
 
 player = create_player()
-print(player.name)
+battle.game(player)
