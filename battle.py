@@ -6,6 +6,3 @@ def generate_mob():
     entity.Mob.set_stats(test_mob)
 
     return test_mob
-
-
-
