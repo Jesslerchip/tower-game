@@ -1,2 +1,5 @@
 # class = ["Name" (0), HP (1), Mana (2), Stamina (3), Power (4), Defense (5), Speed (6)]
-warrior_class = ["Basic", 15, 5, 20, 20, 10, 10]
+warrior_class = ["Warrior", 12, 5, 15, 20, 10, 10]
+archer_class = ["Archer", 10, 7, 10, 15, 15, 15]
+healer_class = ["Healer", 20, 15, 5, 10, 12, 10]
+thief_class = ["Thief", 10, 10, 10, 15, 7, 15]
