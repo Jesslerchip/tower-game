@@ -1,5 +1,4 @@
 max_exp = [0, 30, 60, 90, 120, 150]  # TODO: Array that sets players exp goals
-basic_class = ["Basic", 10, 10, 10, 10, 10, 10]
 
 
 class Player:  # Creates the player instance
