@@ -30,26 +30,17 @@ class Player:  # Creates the player instance
 
 
 class Mob:
-    def __init__(self, name, hp, mana, stamina, power, defense, speed):
-        self.name = name
-        self.hp = hp
-        self.mana = mana
-        self.stamina = stamina
-        self.power = power
-        self.defense = defense
-        self.speed = speed
+    def __init__(self, floor, stats):
+        self.level = floor
 
-        self.level = 1  # TODO: add formula to change level based on floor #
-        self.xp_yield = 1
-
-    def set_stats(self):
-        # Stat = base stat * level
-        self.hp *= self.level
-        self.mana *= self.level
-        self.stamina *= self.level
-        self.power *= self.level
-        self.defense *= self.level
-        self.speed *= self.level
+        # Stat value = base stat * level
+        self.name = stats[0] * self.level
+        self.hp = stats[1] * self.level
+        self.mana = stats[2] * self.level
+        self.stamina = stats[3] * self.level
+        self.power = stats[4] * self.level
+        self.defense = stats[5] * self.level
+        self.speed = stats[6] * self.level
 
         # Experience yield = average of stats
         self.xp_yield = (self.hp + self.mana + self.stamina + self.power + self.defense + self.speed) / 6

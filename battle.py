@@ -4,11 +4,11 @@ import mobs
 
 
 # Generates a new mob
-def generate_mob():  # TODO: Make a mob list to pull from instead of test mob
-    test_mob = entity.Mob("Goblin", 10, 10, 10, 10, 10, 10)
-    entity.Mob.set_stats(test_mob)
+def generate_mob(floor):
+    mob_class = mobs.floor_mobs[floor - 1][randint(0, len(mobs.floor_mobs[floor - 1]) - 1)]
+    new_mob = entity.Mob(floor, mob_class)
 
-    return test_mob
+    return new_mob
 
 
 # Player turn
@@ -38,7 +38,7 @@ def game(player):
     floor = 0
     while player.hp > 0:
         floor += 1
-        mob = generate_mob()  # Generates the mob for the floor
+        mob = generate_mob(floor)  # Generates the mob for the floor
         player.set_stats()
 
         print("Floor " + str(floor))
