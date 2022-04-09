@@ -35,7 +35,7 @@ class Mob:
     def __init__(self, floor, stats):
         self.level = floor
         self.status = []
-        self.counter = 0
+        self.counter = [0]
 
         # Stat value = base stat * level
         self.name = stats[0]
