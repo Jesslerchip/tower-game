@@ -1,7 +1,6 @@
 from random import randint
 import entity
 import mobs
-import player_classes
 
 
 # Generates a new mob
@@ -150,14 +149,102 @@ def player_action_one(player, mob):  # If player chooses action one
     return player, mob
 
 
+def player_action_two(player, mob):  # If player chooses action two
+    # Checks if player is warrior
+    if player.player_class[0] == "Warrior":  # Might
+        player.speed -= 1
+        if player.speed <= 0:  # Ensures speed never drops below 1
+            player.speed = 1
+        player.mana -= int(player.level * 1.75 * 2)
+        if player.mana <= 0:  # Checks if player has enough mana
+            print("WARNING: Low Mana! Chance of ability failure!")
+            coin = randint(0, 1)  # Flips a coin to decide if ability works
+            if coin == 0:
+                print("Ability succeeded!")
+                player.status.append("Might")
+                print(player.name + " activated Might!")
+            else:
+                print("Ability failed!")
+        else:  # Player had enough mana
+            player.status.append("Might")
+            print(player.name + " activated Might!")
+
+    # Checks if player is Archer
+    elif player.player_class[0] == "Archer":  # Focus
+        player.defense = int(player.defense / 2)
+        if player.defense <= 0:  # Ensures player defense never drops below 1
+            player.defense = 1
+        player.mana -= int(player.level * 1.75 * 2)
+        if player.mana <= 0:  # Checks if player has enough mana
+            print("WARNING: Low Mana! Chance of ability failure!")
+            coin = randint(0, 1)  # Flips a coin to decide if ability works
+            if coin == 0:
+                print("Ability succeeded!")
+                player.status.append("Focus")
+                print(player.name + " activated Focus!")
+            else:
+                print("Ability failed!")
+        else:  # Player has enough mana
+            player.status.append("Focus")
+            print(player.name + " activated Focus!")
+
+    # Checks if player is Healer
+    elif player.player_class[0] == "Healer":  # Potion
+        player.mana -= int(player.level * 1.75)
+        player.stamina -= int(player.level * 1.75)
+        if player.mana <= 0 or player.stamina <= 0:  # Checks if player has enough mana
+            print("WARNING: Low Mana or Stamina! Chance of ability failure!")
+            coin = randint(0, 1)  # Flips a coin to see if ability works
+            if coin == 0:
+                print("Ability succeeded!")
+                player.counter[0] += 1  # Increments heal counter
+                heal_amount = int(player.max_hp / player.counter[0])
+                player.hp += heal_amount
+                if player.hp > player.max_hp:  # Ensures Healer's hp doesn't exceed their max hp
+                    player.hp = player.max_hp
+                print("Healed " + player.name + " for " + str(heal_amount) + " HP!")
+            else:
+                print("Ability failed!")
+        else:  # Player had enough mana and stamina
+            player.counter[0] += 1  # Increments heal counter
+            heal_amount = int(player.max_hp / player.counter[0])
+            player.hp += heal_amount
+            if player.hp > player.max_hp:  # Ensures Healer's hp doesn't exceed their max hp
+                player.hp = player.max_hp
+            print("Healed " + player.name + " for " + str(heal_amount) + " HP!")
+
+    # Checks if player is Thief
+    elif player.player_class[0] == "Thief":
+        player.mana -= int(player.level * 1.75 * 2)
+        if player.mana <= 0:
+            print("WARNING: Low Mana! Chance of ability failure!")
+            coin = randint(0, 1)  # Flips a coin to see if ability works
+            if coin == 0:
+                print("Ability succeeded!")
+                crystals_gained = randint(mob.xp_yield / 2, mob.xp_yield * 2)  # Calculates crystal yield
+                if crystals_gained <= 0:  # Ensures a crystal is always stolen
+                    crystals_gained = 1
+                player.crystals += crystals_gained  # Gives player crystals
+                print(player.name + " stole " + str(crystals_gained) + " crystals!")
+            else:
+                print("Ability failed!")
+        else:  # Player has enough mana
+            crystals_gained = randint(mob.xp_yield / 2, mob.xp_yield * 2)
+            if crystals_gained <= 0:
+                crystals_gained = 1
+            player.crystals += crystals_gained
+            print(player.name + " stole " + str(crystals_gained) + " crystals!")
+
+    return player, mob
+
+
 # Player turn
 def player_turn(player, mob):
     turn_results = None
-    action = ""
     turn_complete = False
     while not turn_complete:  # TODO: add other actions
         action = input("What will " + player.name + " do?\n").lower()
-        if action == player.actions[0].lower():  # Standard weapon
+        if action == player.actions[0].lower():  # Standard Weapon
             turn_results = player_action_zero(player, mob)  # Go to action zero function
             turn_complete = True
         if action == player.actions[1].lower():  # Special Weapon
@@ -168,6 +255,9 @@ def player_turn(player, mob):
             else:
                 turn_results = player_action_one(player, mob)
                 turn_complete = True
+        if action == player.actions[2].lower():  # Ability
+            turn_results = player_action_two(player, mob)
+            turn_complete = True
 
     return turn_results
 
@@ -180,6 +270,7 @@ def get_poison_damage(player, mob):  # Handles poison damage
         print(mob.name + " took " + str(damage) + " Poison damage!")
         if mob.counter[0] <= 0:
             mob.status.remove("Psn")
+            print("Poison removed!")
     elif "CritPsn" in mob.status:  # Critical Poison
         damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.16) + 1
         mob.hp -= damage
@@ -187,6 +278,7 @@ def get_poison_damage(player, mob):  # Handles poison damage
         print(mob.name + " took " + str(damage) + " Poison damage!")
         if mob.counter[0] <= 0:
             mob.status.remove("CritPsn")
+            print("Poison removed!")
     elif "WeakPsn" in mob.status:  # Weak Poison
         damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.04) + 1
         mob.hp -= damage
@@ -194,6 +286,7 @@ def get_poison_damage(player, mob):  # Handles poison damage
         print(mob.name + " took " + str(damage) + " Poison damage!")
         if mob.counter[0] <= 0:
             mob.status.remove("WeakPsn")
+            print("Poison removed!")
 
     return mob
 
@@ -285,6 +378,16 @@ def game(player):
             else:
                 turn_order = randint(0, 1)
 
+            # TODO: Change the way stats are printed
+            # Prints player stats
+            print("[" + player.name + "]\nHP: " + str(player.hp) + "/" + str(player.max_hp) + "\nMana: " +
+                  str(player.mana) + "/" + str(player.max_mana) + "\nStamina: " + str(player.stamina) + "/" +
+                  str(player.max_stamina))
+
+            # Prints mob stats
+            print("[" + mob.name + "]\nHP: " + str(mob.hp) + "/" + str(mob.max_hp) + "\nMana: " + str(mob.mana) +
+                  "/" + str(mob.max_mana) + "\nStamina: " + str(mob.stamina) + "/" + str(mob.max_stamina) + "\n")
+
             # Decides who attacks first
             if turn_order == 0:  # Player goes first
                 player_turn(player, mob)
@@ -298,13 +401,12 @@ def game(player):
                     turn_results = player_turn(player, mob)
                     player = turn_results[0]
                     mob = turn_results[1]
-                    print(str(mob.hp))
 
             # If mob is poisoned
             if mob.hp > 0 and mob.counter[0] != 0:
                 mob = get_poison_damage(player, mob)
 
-        if mob.hp <= 0:
+        if mob.hp <= 0:  # Mob is defeated
             print("Level " + str(mob.level) + " " + mob.name + " was defeated!")
             player = get_crystals_xp(player, mob)
             floor = get_floor(player, floor)
