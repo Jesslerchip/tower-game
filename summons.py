@@ -28,7 +28,7 @@ healer_slot_3 = ["none"]
 
 # Thief Gear
 thief_slot_1 = [["Pocket knife", "Sharp dagger"],  # Item name
-                ["Care to do a wittle wittling?",  # Descriptions
+                ["Care to do a whittle whittling?",  # Descriptions
                  "A light, sharp weapon. Less damage than a sword, but it doesn't weigh you down."]]
 thief_slot_2 = ["none"]
 thief_slot_3 = ["none"]
