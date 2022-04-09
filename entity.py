@@ -1,4 +1,4 @@
-max_exp = [0, 30, 60, 90, 120, 150]  # TODO: Array that sets players exp goals
+max_xp = [0, 10, 30, 60, 100, 150]  # TODO: Array that sets players exp goals
 
 
 class Player:  # Creates the player instance
@@ -14,9 +14,10 @@ class Player:  # Creates the player instance
         self.defense = player_class[5]  # base defense from player class
         self.speed = player_class[6]  # base speed from player class
         self.player_perks = [0, 0, 0, 0, 0, 0, 0]  # perks towards each base stat (0 is critical chance, 1-6 are stats)
+        self.actions = self.player_class[7]  # List for storing available actions based on class and gear
         self.level = 1
         self.xp = 0
-        self.max_exp = 30  # Set by max_exp array
+        self.max_xp = 10  # Set by max_exp array
         self.crystals = 0
 
     def set_stats(self):
@@ -26,7 +27,7 @@ class Player:  # Creates the player instance
         self.power = (self.player_class[4] + self.player_perks[4]) * self.level
         self.defense = (self.player_class[5] + self.player_perks[5]) * self.level
         self.speed = (self.player_class[6] + self.player_perks[6]) * self.level
-        self.max_exp = max_exp[self.level]
+        self.max_xp = max_xp[self.level]
 
 
 class Mob:
@@ -43,4 +44,4 @@ class Mob:
         self.speed = stats[6] * self.level
 
         # Experience yield = average of stats
-        self.xp_yield = (self.hp + self.mana + self.stamina + self.power + self.defense + self.speed) / 6
+        self.xp_yield = int((self.hp + self.mana + self.stamina + self.power + self.defense + self.speed) / 6)

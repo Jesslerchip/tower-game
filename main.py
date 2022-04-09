@@ -29,6 +29,7 @@ def create_player():  # Creates a new player
     name = input("What is your name?\n")
     chosen_class = choose_class()
     new_player = entity.Player(name, chosen_class)
+    new_player.set_stats()
 
     return new_player
 
