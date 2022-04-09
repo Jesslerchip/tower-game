@@ -15,21 +15,128 @@ def generate_mob(floor):
 # Player turn
 def player_turn(player, mob):
     action = ""
-    while action.lower() not in player.actions:  # TODO: add other actions
-        action = input("What will " + player.name + " do?\n")
-        if action.lower() == "attack":
-            damage = (player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) / 5
+    while action not in player.actions:  # TODO: add other actions
+        action = input("What will " + player.name + " do?\n").lower()
+    if action == player.actions[0].lower():  # Standard weapon
+        critical = randint(1, 100)  # Checks if hit is critical
+        if "might" not in player.status:  # If warrior's Might is not enabled, lose stamina
+            if player.stamina > 0 and player.player_class[0] != "Healer":
+                player.stamina -= int(player.level * 1.75)
+            elif player.mana > 0 and player.player_class[0] == "Healer":
+                player.mana -= int(player.level * 1.75)
+        else:
+            player.status.remove("might")
+        if "axe" in player.status:
+            damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 4)) / 5)
+            player.status.remove("axe")
+        else:
+            damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) / 5)
+        if critical <= player.player_perks[0]:
+            print("Critical hit!")
+            if "focus" in player.status:
+                damage *= 10
+            else:
+                damage *= 5
+        if player.stamina <= 0 and "might" not in player.status:  # Stamina penalty
+            print("WARNING: Stamina is too low! Damage is halved.")
+            damage = int(damage / 2)
+        if player.mana <= 0:
+            print("WARNING: Mana is too low! Damage is halved.")
+            damage = int(damage / 2)
+        if damage <= 0:
+            damage = 1
+        mob.hp -= damage
+        print(player.name + " attacks " + mob.name + " with " + player.actions[0] + " for " + str(damage) +
+              " damage!")
+    if action == player.actions[1].lower():  # Special Weapon
+        if player.player_class[0] == "Warrior":  # Axe
+            critical = randint(1, 100)  # Checks if hit is critical
+            if "might" not in player.status:  # If warrior's Might is not enabled, lose stamina
+                if player.stamina > 0:
+                    player.stamina -= int(player.level * 1.75) * 5
+            else:  # Disables might after skipping stamina check
+                player.status.remove("might")
+            if "axe" in player.status:
+                damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 4)) / 10)
+                player.status.remove("axe")
+            else:
+                damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) / 10)
+            if critical <= player.player_perks[0]:
+                print("Critical hit!")
+                damage *= 5
+            if player.stamina <= 0 and "might" not in player.status:  # Stamina penalty
+                print("WARNING: Stamina is too low! Damage is halved.")
+                damage = int(damage / 2)
             if damage <= 0:
                 damage = 1
             mob.hp -= damage
-            print(player.name + " attacks " + mob.name + " for " + str(damage) + " damage!")
+            print(player.name + " attacks " + mob.name + " with " + player.actions[1] + " for " + str(damage) +
+                  " damage!")
+            player.status.append("axe")
+        elif player.player_class[0] == "Archer":  # Crossbow
+            if "focus" not in player.status:
+                critical = randint(1, 50)  # Crit chance doubled
+            else:
+                critical = randint(1, 100)
+            if player.stamina > 0:
+                player.stamina -= int(player.level * 1.75) * 2
+            damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) / 5)
+            if critical <= player.player_perks[0]:  # Crit damage doubled
+                print("Critical hit!")
+                damage *= 10
+            if player.stamina <= 0:  # Stamina penalty
+                print("WARNING: Stamina is too low! Damage is halved.")
+                damage = int(damage / 2)
+            if damage <= 0:
+                damage = 1
+            mob.hp -= damage
+            print(player.name + " attacks " + mob.name + " with " + player.actions[1] + " for " + str(damage) +
+                  " damage!")
+        elif player.player_class[0] == "Healer":
+            if "Psn" in mob.status or "WeakPsn" in mob.status or "CritPsn" in mob.status:
+                print("Mob already poisoned!")  # TODO: Edit so this doesn't waste a turn
+            else:
+                critical = randint(1, 100)
+                player.mana -= player.level * 5
+                if player.mana <= 0:
+                    if critical <= player.player_perks[0]:
+                        mob.status.append("Psn")
+                        print("Critical hit!")
+                    else:
+                        mob.status.append("WeakPsn")
+                    print("WARNING: Poison less effective due to low Mana!")
+                else:
+                    if critical <= player.player_perks[0]:
+                        mob.status.append("CritPsn")
+                        print("Critical hit!")
+                    else:
+                        mob.status.append("Psn")
+                print(player.name + " poisoned " + mob.name + "!")
+                mob.counter = 3
+        elif player.player_class[0] == "Thief":
+            critical = randint(1, 100)
+            if player.stamina >= int(player.level * 1.75):
+                player.stamina -= int(player.level * 1.75)
+                if critical <= player.player_perks[0]:
+                    reduction = int(player.level * 1.75) + 1
+                else:
+                    reduction = int(player.level * 1.75 / 2) + 1
+            else:
+                print("WARNING: Dash less effective due to low stamina!")
+                if critical <= player.player_perks[0]:
+                    reduction = int(player.level * 1.75 / 2) + 1
+                else:
+                    reduction = int(player.level * 1.75 / 4) + 1
+            mob.stamina -= reduction
+            mob.mana -= reduction
+            print(player.name + " reduced " + mob.name + "'s Stamina and Mana by " + str(reduction) + "!")
 
-            return player, mob
+    return player, mob
 
 
 # Mob turn
 def mob_turn(player, mob):
-    damage = (mob.power * (mob.level + 1) - (player.defense * (player.level + 1) / 2)) / 5
+    damage = int((mob.power * (mob.level + 1) - (player.defense * (player.level + 1) / 2)) / 5)
     if damage <= 0:
         damage = 1
     player.hp -= damage
@@ -127,6 +234,29 @@ def game(player):
                     turn_results = player_turn(player, mob)
                     player = turn_results[0]
                     mob = turn_results[1]
+                    print(str(mob.hp))
+            if mob.hp > 0 and ("Psn" in mob.status or "CritPsn" in mob.status or "WeakPsn" in mob.status):
+                if "Psn" in mob.status:
+                    damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.08) + 1
+                    mob.hp -= damage
+                    mob.counter -= 1
+                    print(mob.name + " took " + str(damage) + " Poison damage!")
+                    if mob.counter <= 0:
+                        mob.status.remove("Psn")
+                elif "CritPsn" in mob.status:
+                    damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.16) + 1
+                    mob.hp -= damage
+                    mob.counter -= 1
+                    print(mob.name + " took " + str(damage) + " Poison damage!")
+                    if mob.counter <= 0:
+                        mob.status.remove("CritPsn")
+                elif "WeakPsn" in mob.status:
+                    damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.04) + 1
+                    mob.hp -= damage
+                    mob.counter -= 1
+                    print(mob.name + " took " + str(damage) + " Poison damage!")
+                    if mob.counter <= 0:
+                        mob.status.remove("WeakPsn")
 
         if mob.hp <= 0:
             print("Level " + str(mob.level) + " " + mob.name + " was defeated!")

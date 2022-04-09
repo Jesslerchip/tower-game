@@ -19,6 +19,7 @@ class Player:  # Creates the player instance
         self.xp = 0
         self.max_xp = 10  # Set by max_exp array
         self.crystals = 0
+        self.status = []
 
     def set_stats(self):
         self.hp = (self.player_class[1] + self.player_perks[1]) * self.level
@@ -33,6 +34,8 @@ class Player:  # Creates the player instance
 class Mob:
     def __init__(self, floor, stats):
         self.level = floor
+        self.status = []
+        self.counter = 0
 
         # Stat value = base stat * level
         self.name = stats[0]
