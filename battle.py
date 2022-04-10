@@ -1,6 +1,7 @@
 from random import randint
 import actions
 import entity
+from misc import rng
 import mobs
 import status
 
@@ -35,7 +36,7 @@ def player_turn(player, mob):
             print(i[0])
         action = input("What will " + player.name + " do?\n").lower()
         if action == player.actions[0][0].lower():  # Standard Weapon
-            turn_results = actions.player_action_zero(player, mob)  # Go to action zero function
+            turn_results = actions.player_action(player, mob, 0)  # Go to action zero function
             turn_complete = True
         if action == player.actions[1][0].lower():  # Special Weapon
 
@@ -43,10 +44,10 @@ def player_turn(player, mob):
             if "Psn" in mob.status or "WeakPsn" in mob.status or "CritPsn" in mob.status:
                 print("Mob already poisoned!")
             else:
-                turn_results = actions.player_action_one(player, mob)
+                turn_results = actions.player_action(player, mob, 1)
                 turn_complete = True
         if action == player.actions[2][0].lower():  # Ability
-            turn_results = actions.player_action_two(player, mob)
+            turn_results = actions.player_action(player, mob, 2)
             turn_complete = True
 
         # TODO: These functions :3
@@ -141,16 +142,16 @@ def game(player):
             elif mob.speed > player.speed:
                 turn_order = 1
             else:
-                turn_order = randint(0, 1)
+                turn_order = rng(2)
 
             # Decides who attacks first
-            if turn_order == 0:  # Player goes first
+            if turn_order == 1:  # Player goes first
                 player_turn(player, mob)
                 if mob.hp > 0:
                     turn_results = mob_turn(player, mob)
                     player = turn_results[0]
                     mob = turn_results[1]
-            elif turn_order == 1:  # Mob goes first
+            elif turn_order == 2:  # Mob goes first
                 mob_turn(player, mob)
                 if player.hp > 0:
                     turn_results = player_turn(player, mob)

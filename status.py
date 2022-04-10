@@ -29,12 +29,12 @@ def get_poison_damage(player, mob):
 
 
 # Handles potion healing
-def get_potion_health(player):
-    player.counter[0] += 1  # Increments heal counter
-    heal_amount = int(player.max_hp / player.counter[0])
-    player.hp += heal_amount
-    if player.hp > player.max_hp:  # Ensures Healer's hp doesn't exceed their max hp
-        player.hp = player.max_hp
-    print("Healed " + player.name + " for " + str(heal_amount) + " HP!")
+def get_potion_health(entity):
+    entity.counter[0] += 1  # Increments heal counter
+    heal_amount = int(entity.max_hp / entity.counter[0])
+    entity.hp += heal_amount
+    if entity.hp > entity.max_hp:  # Ensures Healer's hp doesn't exceed their max hp
+        entity.hp = entity.max_hp
+    print("Healed " + entity.name + " for " + str(heal_amount) + " HP!")
 
-    return player
+    return entity
