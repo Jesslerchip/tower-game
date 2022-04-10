@@ -38,6 +38,7 @@ class Player:  # Creates the player instance
         self.max_hp = self.hp
         self.max_mana = self.mana
         self.max_stamina = self.stamina
+        self.counter = [0]
 
 
 class Mob:

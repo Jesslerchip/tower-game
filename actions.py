@@ -41,7 +41,7 @@ def player_action_zero(player, mob):  # If player chooses action zero
     if damage <= 0:  # Makes sure damage is always greater than 0
         damage = 1
     mob.hp -= damage  # Mob's health is decreased
-    print(player.name + " attacks " + mob.name + " with " + player.actions[0] + " for " + str(damage) +
+    print(player.name + " attacks " + mob.name + " with " + player.actions[0][0] + " for " + str(damage) +
           " damage!")
 
     return player, mob
@@ -75,7 +75,7 @@ def player_action_one(player, mob):  # If player chooses action one
         if damage <= 0:  # Makes sure damage is always greater than 0
             damage = 1
         mob.hp -= damage  # Decreases mob's hp
-        print(player.name + " attacks " + mob.name + " with " + player.actions[1] + " for " + str(damage) +
+        print(player.name + " attacks " + mob.name + " with " + player.actions[1][0] + " for " + str(damage) +
               " damage!")
         player.status.append("axe")  # adds axe to player status for the next hit
 
@@ -97,7 +97,7 @@ def player_action_one(player, mob):  # If player chooses action one
         if damage <= 0:
             damage = 1
         mob.hp -= damage  # Decreases mob's hp
-        print(player.name + " attacks " + mob.name + " with " + player.actions[1] + " for " + str(damage) +
+        print(player.name + " attacks " + mob.name + " with " + player.actions[1][0] + " for " + str(damage) +
               " damage!")
 
     # Checks if player is Healer

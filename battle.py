@@ -30,12 +30,14 @@ def player_turn(player, mob):
     turn_results = None
     turn_complete = False
     while not turn_complete:  # TODO: add other actions
-        print("Actions:", *player.actions)
+        print("[Actions]")
+        for i in player.actions:
+            print(i[0])
         action = input("What will " + player.name + " do?\n").lower()
-        if action == player.actions[0].lower():  # Standard Weapon
+        if action == player.actions[0][0].lower():  # Standard Weapon
             turn_results = actions.player_action_zero(player, mob)  # Go to action zero function
             turn_complete = True
-        if action == player.actions[1].lower():  # Special Weapon
+        if action == player.actions[1][0].lower():  # Special Weapon
 
             # Ensures Healer hasn't already poisoned
             if "Psn" in mob.status or "WeakPsn" in mob.status or "CritPsn" in mob.status:
@@ -43,7 +45,7 @@ def player_turn(player, mob):
             else:
                 turn_results = actions.player_action_one(player, mob)
                 turn_complete = True
-        if action == player.actions[2].lower():  # Ability
+        if action == player.actions[2][0].lower():  # Ability
             turn_results = actions.player_action_two(player, mob)
             turn_complete = True
 
@@ -69,29 +71,17 @@ def mob_turn(player, mob):  # TODO: Make mob attacks unique and cost stamina/man
 
 # Levels up the player
 def level_up(player):
+    perk_list = ["critical", "hp", "mana", "stamina", "power", "defense", "speed"]
     perk_choice = ""
     player.level += 1
     player.xp -= player.max_xp
     print(player.name + " leveled up to Level " + str(player.level) + "!")
-    while perk_choice not in ["critical", "hp", "mana", "stamina", "power", "defense", "speed"]:
+    while perk_choice not in perk_list:
         perk_choice = input("Choose a stat to upgrade: Critical, HP, Mana, Stamina, Power, Defense, Speed\n").lower()
     if perk_choice == "critical":
         player.player_perks[0] += 5
-    elif perk_choice == "hp":
-        player.player_perks[1] += 1
-    elif perk_choice == "mana":
-        player.player_perks[2] += 1
-    elif perk_choice == "stamina":
-        player.player_perks[3] += 1
-    elif perk_choice == "power":
-        player.player_perks[4] += 1
-    elif perk_choice == "defense":
-        player.player_perks[5] += 1
-    elif perk_choice == "speed":
-        player.player_perks[6] += 1
     else:
-        print("An error has occurred. Adding perk to HP.")
-        player.player_perks[1] += 1
+        player.player_perks[perk_list.index(perk_choice)] += 1
 
     return player
 
@@ -107,8 +97,6 @@ def get_crystals_xp(player, mob):
     print(player.name + " earned " + str(mob.xp_yield) + " XP!")
     if player.xp >= player.max_xp:
         player = level_up(player)
-
-    player.set_stats()
 
     return player
 
@@ -186,5 +174,6 @@ def game(player):
             print("Level " + str(mob.level) + " " + mob.name + " was defeated!")
             player = get_crystals_xp(player, mob)
             floor = get_floor(player, floor)
+            player.set_stats()
 
     print("Game over!")
