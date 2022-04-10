@@ -92,7 +92,7 @@ def player_turn(player, mob):
             mob.hp -= damage
             print(player.name + " attacks " + mob.name + " with " + player.actions[1] + " for " + str(damage) +
                   " damage!")
-        elif player.player_class[0] == "Healer":
+        elif player.player_class[0] == "Healer":  # Poison
             if "Psn" in mob.status or "WeakPsn" in mob.status or "CritPsn" in mob.status:
                 print("Mob already poisoned!")  # TODO: Edit so this doesn't waste a turn
             else:
@@ -113,20 +113,20 @@ def player_turn(player, mob):
                         mob.status.append("Psn")
                 print(player.name + " poisoned " + mob.name + "!")
                 mob.counter = 3
-        elif player.player_class[0] == "Thief":
+        elif player.player_class[0] == "Thief":  # Dash
             critical = randint(1, 100)
             if player.stamina >= int(player.level * 1.75):
                 player.stamina -= int(player.level * 1.75)
                 if critical <= player.player_perks[0]:
-                    reduction = int(player.level * 1.75) + 1
+                    reduction = int(player.level * 1.75 * 2) + 1
                 else:
-                    reduction = int(player.level * 1.75 / 2) + 1
+                    reduction = int(player.level * 1.75) + 1
             else:
                 print("WARNING: Dash less effective due to low stamina!")
                 if critical <= player.player_perks[0]:
-                    reduction = int(player.level * 1.75 / 2) + 1
+                    reduction = int(player.level * 1.75) + 1
                 else:
-                    reduction = int(player.level * 1.75 / 4) + 1
+                    reduction = int(player.level * 1.75 / 2) + 1
             mob.stamina -= reduction
             mob.mana -= reduction
             print(player.name + " reduced " + mob.name + "'s Stamina and Mana by " + str(reduction) + "!")
