@@ -10,7 +10,7 @@ thief_actions = ["Dagger", "Dash", "Pickpocket"]  # Dash costs same stamina as d
 
 
 # class = ["Name" (0), HP (1), Mana (2), Stamina (3), Power (4), Defense (5), Speed (6), Actions(7)]
-warrior_class = ["Warrior", 10, 8, 15, 17, 10, 10, warrior_actions]
-archer_class = ["Archer", 10, 7, 10, 15, 15, 15, archer_actions]
-healer_class = ["Healer", 17, 15, 8, 10, 12, 10, healer_actions]
-thief_class = ["Thief", 10, 10, 13, 15, 7, 17, thief_actions]
+warrior_class = ["Warrior", 10, 8, 12, 15, 10, 8, warrior_actions]
+archer_class = ["Archer", 10, 10, 10, 13, 10, 12, archer_actions]
+healer_class = ["Healer", 15, 12, 8, 8, 12, 10, healer_actions]
+thief_class = ["Thief", 8, 10, 13, 12, 7, 15, thief_actions]

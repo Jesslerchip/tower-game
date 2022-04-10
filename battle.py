@@ -240,9 +240,21 @@ def player_action_two(player, mob):  # If player chooses action two
 
 # Player turn
 def player_turn(player, mob):
+
+    # TODO: Change the way stats are printed
+    # Prints player stats
+    print("[" + player.name + "]\nHP: " + str(player.hp) + "/" + str(player.max_hp) + "\nMana: " +
+          str(player.mana) + "/" + str(player.max_mana) + "\nStamina: " + str(player.stamina) + "/" +
+          str(player.max_stamina))
+
+    # Prints mob stats
+    print("[" + mob.name + "]\nHP: " + str(mob.hp) + "/" + str(mob.max_hp) + "\nMana: " + str(mob.mana) +
+          "/" + str(mob.max_mana) + "\nStamina: " + str(mob.stamina) + "/" + str(mob.max_stamina) + "\n")
+
     turn_results = None
     turn_complete = False
     while not turn_complete:  # TODO: add other actions
+        print("Actions:", *player.actions)
         action = input("What will " + player.name + " do?\n").lower()
         if action == player.actions[0].lower():  # Standard Weapon
             turn_results = player_action_zero(player, mob)  # Go to action zero function
@@ -351,11 +363,23 @@ def get_crystals_xp(player, mob):
 # Asks player if they want to advance floors
 def get_floor(player, floor):
     will_continue = ""
-    while will_continue != "y" and will_continue != "yes" and will_continue != "n" and will_continue != "no":
-        will_continue = input("Would you like to move to the next floor?\nYou can't return if you do. Y/N\n").lower()
-    if will_continue == "y" or will_continue == "yes":
+    while will_continue != "up" and will_continue != "down" and will_continue != "stay":  # Allows player to choose
+        will_continue = input("Would you like to move up, down, or stay?\n").lower()
+
+        # Player goes down
+        if floor == 1 and will_continue == "down":  # Player can't go down
+            print("Can't go any lower!")
+            will_continue = ""
+
+    # Player goes up
+    if will_continue == "up":
         floor += 1
         print(player.name + " has reached Floor " + str(floor) + ".")
+
+    # Player goes down
+    elif will_continue == "down":
+        floor -= 1
+        print(player.name + " has returned to Floor " + str(floor) + ".")
 
     return floor
 
@@ -377,16 +401,6 @@ def game(player):
                 turn_order = 1
             else:
                 turn_order = randint(0, 1)
-
-            # TODO: Change the way stats are printed
-            # Prints player stats
-            print("[" + player.name + "]\nHP: " + str(player.hp) + "/" + str(player.max_hp) + "\nMana: " +
-                  str(player.mana) + "/" + str(player.max_mana) + "\nStamina: " + str(player.stamina) + "/" +
-                  str(player.max_stamina))
-
-            # Prints mob stats
-            print("[" + mob.name + "]\nHP: " + str(mob.hp) + "/" + str(mob.max_hp) + "\nMana: " + str(mob.mana) +
-                  "/" + str(mob.max_mana) + "\nStamina: " + str(mob.stamina) + "/" + str(mob.max_stamina) + "\n")
 
             # Decides who attacks first
             if turn_order == 0:  # Player goes first
