@@ -37,6 +37,26 @@ armor = [("Cotton rags", "", 100),
 
 
 def summon_menu(player):
+    # TODO: actually make the buying system work
+    choice = ""
+    while choice != "exit":
+        print_shop(player)
+        print(player.name + "'s crystals: " + str(player.crystals))
+        choice = input("Make a selection (gear type): ").lower()
+
+        if choice == "weapon":
+            buy_weapon(player)
+
+        if choice == "special":
+            buy_special(player)
+
+        elif choice == "armor":
+            buy_armor(player)
+
+    return
+
+
+def print_shop(player):
     if player.player_class[0] == "Warrior":
         if player.weapon < (len(warrior_slot_1) - 1):
             print("Weapon: ".ljust(10) + warrior_slot_1[player.weapon + 1][0].ljust(20)
@@ -94,24 +114,64 @@ def summon_menu(player):
 
     print("Exit\n")
 
-    # TODO: actually make the buying system work
-    choice = ""
-    while choice != "exit":
-        choice = input("Make a selection (gear type): ").lower()
 
-        if choice == "weapon":
-            if player.crystals >= 0:
-                player.crystals -= 0
-                player.weapon += 1
+def buy_weapon(player):
+    if player.player_class[0] == "Warrior":
+        if player.crystals >= warrior_slot_1[player.weapon + 1][2]:
+            player.crystals -= warrior_slot_1[player.weapon + 1][2]
+            player.weapon += 1
+        else:
+            print("You don't have enough crystals for that!\n")
+    elif player_class == "Archer":
+        if player.crystals >= archer_slot_1[player.weapon + 1][2]:
+            player.crystals -= archer_slot_1[player.weapon + 1][2]
+            player.weapon += 1
+        else:
+            print("You don't have enough crystals for that!\n")
+    elif player_class == "Healer":
+        if player.crystals >= healer_slot_1[player.weapon + 1][2]:
+            player.crystals -= healer_slot_1[player.weapon + 1][2]
+            player.weapon += 1
+        else:
+            print("You don't have enough crystals for that!\n")
+    else:
+        if player.crystals >= healer_slot_1[player.weapon + 1][2]:
+            player.crystals -= healer_slot_1[player.weapon + 1][2]
+            player.weapon += 1
+        else:
+            print("You don't have enough crystals for that!\n")
 
-        if choice == "special":
-            if player.crystals >= 100:
-                player.crystals -= 100
-                player.special += 1
 
-        elif choice == "armor":
-            if player.crystals >= 100:
-                player.crystals -= 100
-                player.armor += 1
+def buy_special(player):
+    if player.player_class[0] == "Warrior":
+        if player.crystals >= warrior_slot_2[player.special + 1][2]:
+            player.crystals -= warrior_slot_2[player.special + 1][2]
+            player.weapon += 1
+        else:
+            print("You don't have enough crystals for that!\n")
+    elif player_class == "Archer":
+        if player.crystals >= archer_slot_2[player.special + 1][2]:
+            player.crystals -= archer_slot_2[player.special + 1][2]
+            player.weapon += 1
+        else:
+            print("You don't have enough crystals for that!\n")
+    elif player_class == "Healer":
+        if player.crystals >= healer_slot_2[player.special + 1][2]:
+            player.crystals -= healer_slot_2[player.special + 1][2]
+            player.weapon += 1
+        else:
+            print("You don't have enough crystals for that!\n")
+    else:
+        if player.crystals >= healer_slot_2[player.special + 1][2]:
+            player.crystals -= healer_slot_2[player.special + 1][2]
+            player.special += 1
+        else:
+            print("You don't have enough crystals for that!\n")
 
-    return
+
+def buy_armor(player):
+    if player.crystals >= armor[player.armor + 1][2]:
+        player.crystals -= armor[player.armor + 1][2]
+        player.armor += 1
+    else:
+        print("You don't have enough crystals for that!\n")
