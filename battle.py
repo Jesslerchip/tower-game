@@ -59,7 +59,32 @@ def player_turn(player, mob):
             turn_complete = True
         if action == "summon":
             summons.summon_menu(player)
-        # if action == "help":
+        if action == "help":
+            # Weapon
+            if player.player_class[0] == "Healer":
+                print(player.actions[0][0] + ": Standard attack. Damage depends on power. Costs mana.")
+            else:
+                print(player.actions[0][0] + ": Standard attack. Damage depends on power. Costs stamina.")
+
+            # Special
+            if player.player_class[0] == "Warrior":
+                print(player.actions[1][0] + ": Halves mob defense against next hit. Costs stamina.")
+            elif player.player_class[0] == "Archer":
+                print(player.actions[1][0] + ": Deals double damage on a crit. Costs stamina.")
+            elif player.player_class[0] == "Healer":
+                print(player.actions[1][0] + ": Deals 40% of hex for 3 turns. Costs mana.")
+            else:
+                print(player.actions[1][0] + ": Decreases enemy's stamina and mana. Costs stamina.")
+
+                # Ability
+            if player.player_class[0] == "Warrior":
+                print(player.actions[2][0] + ": Decreases speed by 1, but eliminates stamina cost of next hit.")
+            elif player.player_class[0] == "Archer":
+                print(player.actions[2][0] + ": Decreases defense by 2, but doubles crit chance of next hit.")
+            elif player.player_class[0] == "Healer":
+                print(player.actions[2][0] + ": Heals the user. Healing is halved after each use. Costs mana.")
+            else:
+                print(player.actions[2][0] + ": Steals extra crystals, but costs mana.")
 
     return turn_results
 

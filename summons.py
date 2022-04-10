@@ -94,6 +94,7 @@ def summon_menu(player):
 
     print("Exit\n")
 
+    # TODO: actually make the buying system work
     choice = ""
     while choice != "exit":
         choice = input("Make a selection (gear type): ").lower()
