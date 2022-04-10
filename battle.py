@@ -3,6 +3,7 @@ import actions
 import entity
 import mobs
 import status
+import summons
 
 
 # TODO: Make save file that can be loaded
@@ -48,12 +49,10 @@ def player_turn(player, mob):
         if action == player.actions[2][0].lower():  # Ability
             turn_results = actions.player_action_two(player, mob)
             turn_complete = True
-
-        # TODO: These functions :3
-        # if action == "summon:
-            # Summon function goes here
+        if action == "summon":
+            summons.summon_menu(player)
         # if action == "help":
-            # help function goes here
+
 
     return turn_results
 

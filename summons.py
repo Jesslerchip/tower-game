@@ -35,3 +35,24 @@ thief_slot_3 = ["none"]
 
 # Armor
 armor = ["Cotton rags", "Thin armor", "Gambeson", "Chain mail", "Cuirass", "Plated armor"]
+
+
+def summon_menu(player):
+    if player.player_class[0] == "Warrior":
+        print(warrior_slot_1[0][player.weapon + 1])  # Prints name of next main weapon available to player
+        print(warrior_slot_2[0][player.special + 1])  # Prints name of next special weapon available to player
+        print(armor[player.armor + 1])  # Prints name of next armor class available to player
+    if player.player_class[0] == "Archer":
+        print(archer_slot_1[0][player.weapon + 1])  # Prints name of next main weapon available to player
+        print(archer_slot_2[0][player.special + 1])  # Prints name of next special weapon available to player
+        print(armor[player.armor + 1])  # Prints name of next armor class available to player
+    if player.player_class[0] == "Healer":
+        print(healer_slot_1[0][player.weapon + 1])  # Prints name of next main weapon available to player
+        print(healer_slot_2[0][player.special + 1])  # Prints name of next special weapon available to player
+        print(armor[player.armor + 1])  # Prints name of next armor class available to player
+    if player.player_class[0] == "Thief":
+        print(thief_slot_1[0][player.weapon + 1])  # Prints name of next main weapon available to player
+        print(thief_slot_2[0][player.special + 1])  # Prints name of next special weapon available to player
+        print(armor[player.armor + 1])  # Prints name of next armor class available to player
+
+    return 0
