@@ -16,17 +16,25 @@ def generate_mob(floor):
     return new_mob
 
 
+def output_stats(player, mob):
+    player_header = "[" + player.name + "]"
+    mob_header = "[" + mob.name + "]"
+    player_health_bar = str(player.hp) + "/" + str(player.max_hp)
+    mob_health_bar = str(mob.hp) + "/" + str(mob.max_hp)
+    player_mana_bar = str(player.mana) + "/" + str(player.max_mana)
+    mob_mana_bar = str(mob.mana) + "/" + str(mob.max_mana)
+    player_stamina_bar = str(player.stamina) + "/" + str(player.max_stamina)
+    mob_stamina_bar = str(mob.stamina) + "/" + str(mob.max_stamina)
+
+    print("        " + player_header.center(10) + "|" + mob_header.center(10))
+    print("HP:     " + player_health_bar.center(10) + "|" + mob_health_bar.center(10))
+    print("Mana:   " + player_mana_bar.center(10) + "|" + mob_mana_bar.center(10))
+    print("Stamina:" + player_stamina_bar.center(10) + "|" + mob_stamina_bar.center(10) + "\n")
+
+
 # Player turn
 def player_turn(player, mob):
-    # TODO: Change the way stats are printed
-    # Prints player stats
-    print("[" + player.name + "]\nHP: " + str(player.hp) + "/" + str(player.max_hp) + "\nMana: " +
-          str(player.mana) + "/" + str(player.max_mana) + "\nStamina: " + str(player.stamina) + "/" +
-          str(player.max_stamina))
-
-    # Prints mob stats
-    print("[" + mob.name + "]\nHP: " + str(mob.hp) + "/" + str(mob.max_hp) + "\nMana: " + str(mob.mana) +
-          "/" + str(mob.max_mana) + "\nStamina: " + str(mob.stamina) + "/" + str(mob.max_stamina) + "\n")
+    output_stats(player, mob)
 
     turn_results = None
     turn_complete = False
@@ -52,7 +60,6 @@ def player_turn(player, mob):
         if action == "summon":
             summons.summon_menu(player)
         # if action == "help":
-
 
     return turn_results
 
