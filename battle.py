@@ -4,6 +4,7 @@ import entity
 from misc import rng
 import mobs
 import status
+import summons
 
 
 # TODO: Make save file that can be loaded
@@ -16,24 +17,65 @@ def generate_mob(floor):
     return new_mob
 
 
+def output_stats(player, mob):
+    player_header = "[" + player.name + "]"
+    mob_header = "[" + mob.name + "]"
+    player_health_bar = str(player.hp) + "/" + str(player.max_hp)
+    mob_health_bar = str(mob.hp) + "/" + str(mob.max_hp)
+    player_mana_bar = str(player.mana) + "/" + str(player.max_mana)
+    mob_mana_bar = str(mob.mana) + "/" + str(mob.max_mana)
+    player_stamina_bar = str(player.stamina) + "/" + str(player.max_stamina)
+    mob_stamina_bar = str(mob.stamina) + "/" + str(mob.max_stamina)
+
+    print("        " + player_header.center(10) + "|" + mob_header.center(10))
+    print("HP:     " + player_health_bar.center(10) + "|" + mob_health_bar.center(10))
+    print("Mana:   " + player_mana_bar.center(10) + "|" + mob_mana_bar.center(10))
+    print("Stamina:" + player_stamina_bar.center(10) + "|" + mob_stamina_bar.center(10) + "\n")
+
+
+def help_menu(player):
+    # Weapon
+    if player.player_class[0] == "Healer":
+        print(player.actions[0][0] + ": Standard attack. Damage depends on power. Costs mana.")
+    else:
+        print(player.actions[0][0] + ": Standard attack. Damage depends on power. Costs stamina.")
+
+    # Special
+    if player.player_class[0] == "Warrior":
+        print(player.actions[1][0] + ": Halves mob defense against next hit. Costs stamina.")
+    elif player.player_class[0] == "Archer":
+        print(player.actions[1][0] + ": Deals double damage on a crit. Costs stamina.")
+    elif player.player_class[0] == "Healer":
+        print(player.actions[1][0] + ": Deals 40% of hex for 3 turns. Costs mana.")
+    else:
+        print(player.actions[1][0] + ": Decreases enemy's stamina and mana. Costs stamina.")
+
+    # Ability
+    if player.player_class[0] == "Warrior":
+        print(player.actions[2][0] + ": Decreases speed by 1, but eliminates stamina cost of next hit.")
+    elif player.player_class[0] == "Archer":
+        print(player.actions[2][0] + ": Decreases defense by 2, but doubles crit chance of next hit.")
+    elif player.player_class[0] == "Healer":
+        print(player.actions[2][0] + ": Heals the user. Healing is halved after each use. Costs mana.")
+    else:
+        print(player.actions[2][0] + ": Steals extra crystals, but costs mana.")
+
+    # Summon
+    print("Summon: Opens shop menu.\n")
+
+
 # Player turn
 def player_turn(player, mob):
-    # TODO: Change the way stats are printed
-    # Prints player stats
-    print("[" + player.name + "]\nHP: " + str(player.hp) + "/" + str(player.max_hp) + "\nMana: " +
-          str(player.mana) + "/" + str(player.max_mana) + "\nStamina: " + str(player.stamina) + "/" +
-          str(player.max_stamina))
-
-    # Prints mob stats
-    print("[" + mob.name + "]\nHP: " + str(mob.hp) + "/" + str(mob.max_hp) + "\nMana: " + str(mob.mana) +
-          "/" + str(mob.max_mana) + "\nStamina: " + str(mob.stamina) + "/" + str(mob.max_stamina) + "\n")
+    output_stats(player, mob)
 
     turn_results = None
     turn_complete = False
     while not turn_complete:  # TODO: add other actions
-        print("[Actions]")
+        print("Available actions:")
         for i in player.actions:
             print(i[0])
+        print("Summon")
+        print("Help\n")
         action = input("What will " + player.name + " do?\n").lower()
         if action == player.actions[0][0].lower():  # Standard Weapon
             turn_results = actions.player_action(player, mob, 0)  # Go to action zero function
@@ -49,12 +91,10 @@ def player_turn(player, mob):
         if action == player.actions[2][0].lower():  # Ability
             turn_results = actions.player_action(player, mob, 2)
             turn_complete = True
-
-        # TODO: These functions :3
-        # if action == "summon:
-            # Summon function goes here
-        # if action == "help":
-            # help function goes here
+        if action == "summon":
+            summons.summon_menu(player)  # Shop
+        if action == "help":
+            help_menu(player)  # Help menu
 
     return turn_results
 

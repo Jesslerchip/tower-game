@@ -23,6 +23,9 @@ class Player:  # Creates the player instance
         self.max_stamina = player_class[1]
         self.crystals = 0
         self.status = []
+        self.weapon = 0  # Current level of player's weapon gear
+        self.special = 0  # Current level of player's special gear
+        self.armor = 0  # Current level of player's armor
 
         # 0 = Heal counter
         self.counter = [0]
