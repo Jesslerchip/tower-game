@@ -18,8 +18,14 @@ class Player:  # Creates the player instance
         self.level = 1
         self.xp = 0
         self.max_xp = 10  # Set by max_exp array
+        self.max_hp = player_class[1]
+        self.max_mana = player_class[1]
+        self.max_stamina = player_class[1]
         self.crystals = 0
         self.status = []
+
+        # 0 = Heal counter
+        self.counter = [0]
 
     def set_stats(self):
         self.hp = (self.player_class[1] + self.player_perks[1]) * self.level
@@ -29,13 +35,18 @@ class Player:  # Creates the player instance
         self.defense = (self.player_class[5] + self.player_perks[5]) * self.level
         self.speed = (self.player_class[6] + self.player_perks[6]) * self.level
         self.max_xp = max_xp[self.level]
+        self.max_hp = self.hp
+        self.max_mana = self.mana
+        self.max_stamina = self.stamina
 
 
 class Mob:
     def __init__(self, floor, stats):
         self.level = floor
         self.status = []
-        self.counter = 0
+
+        # 0 = Poison counter
+        self.counter = [0]
 
         # Stat value = base stat * level
         self.name = stats[0]
@@ -45,6 +56,9 @@ class Mob:
         self.power = stats[4] * self.level
         self.defense = stats[5] * self.level
         self.speed = stats[6] * self.level
+        self.max_hp = self.hp
+        self.max_mana = self.mana
+        self.max_stamina = self.stamina
 
         # Experience yield = average of stats
         self.xp_yield = int((self.hp + self.mana + self.stamina + self.power + self.defense + self.speed) / 6)
