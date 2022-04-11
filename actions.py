@@ -1,5 +1,7 @@
 from random import randint
+from entity import Mob
 from misc import rng
+from mob_data import ritual_mobs, ritual_actions
 import status
 
 
@@ -60,7 +62,7 @@ def get_action_cost(entity, action):
     # Special cost
     if action[0] == entity.actions[1][0]:
 
-        # Player Spcials
+        # Player Specials
         if action[0] == "Axe":
             if "Might" not in entity.status:
                 entity.stamina -= int(entity.level * 1.75 * 5)
@@ -70,10 +72,19 @@ def get_action_cost(entity, action):
             entity.stamina -= int(entity.level * 1.75)
         elif action[0] == "Poison":
             entity.mana -= int(entity.level * 1.75)
+        elif action[0] == "Pact":
+            entity.hp -= int(entity.level * 1.75 * entity.power / 3)
+            if entity.hp <= 0:
+                entity.hp = 1
 
         # Mob Specials
         elif action[0] == "Scream":
             entity.mana -= int(entity.level * 1.75)
+        elif action[0] == "Stomp":
+            entity.stamina -= int(entity.level * 1.75) * 2
+        elif action[0] == "Toxic Brew":
+            entity.mana -= int(entity.level * 1.75)
+            entity.stamina -= int(entity.level * 1.75)
 
     # Ability cost
     if action[0] == entity.actions[2][0]:
@@ -94,12 +105,25 @@ def get_action_cost(entity, action):
             entity.stamina -= int(entity.level * 1.75)
         elif action[0] == "Pickpocket":
             entity.mana -= int(entity.level * 1.75 * 2)
+        elif action[0] == "Ritual":
+            entity.mana -= int(entity.level * 1.75)
+            entity.hp -= int(entity.level * 1.75 * 2)
 
         # Mob abilities
         elif action[0] == "Cower":
             entity.speed -= 1
             if entity.speed <= 0:  # Ensures Speed never drops below 1
                 entity.speed = 1
+        elif action[0] == "Rest":
+            entity.mana -= int(entity.level * 1.75)
+        elif action[0] == "Magic Broom":
+            entity.mana -= int(entity.level * 1.75 * 2)
+            entity.stamina -= int(entity.level * 1.75 * 2)
+        elif action[0] == "Last Resort":
+            entity.hp -= (entity.hp - 1)
+        elif action[0] == "Skill Swap":
+            entity.mana -= int(entity.level * 1.75 * 2)
+            entity.stamina -= int(entity.level * 1.75 * 2)
 
     # Checks if attacker went below stamina or mana minimum
     if entity.stamina >= 0 and entity.mana >= 0:
@@ -113,14 +137,15 @@ def get_action_cost(entity, action):
         entity.mana = 0
         low_stat_mod = 0.5
 
-    if "Might" in entity.status:
+    if "Might" in entity.status:  # Disables Might after skipping stamina reduction
         entity.status.remove("Might")
 
     return entity, low_stat_mod
 
 
-# Gets effects for unique actions. Standard attacks only do damage so they aren't checked
+# Get effects for unique actions. Standard attacks only do damage so they aren't checked
 def get_action_effects(attacker, defender, action, attacker_mods):
+    ritual_mob = Mob(1, ["null", 0, 0, 0, 0, 0, 0, ritual_actions])
     # If action is special
 
     # Player actions
@@ -132,6 +157,8 @@ def get_action_effects(attacker, defender, action, attacker_mods):
     # Poison
     elif action[0] == "Poison":
         print(defender.name + " was Poisoned by " + attacker.name + "!")
+
+        # Appends different poisons based on modifiers
         if attacker_mods[0] == 5 and attacker_mods[1] == 1:
             defender.status.append("CritPsn")
             defender.counter[0] = 3
@@ -141,6 +168,7 @@ def get_action_effects(attacker, defender, action, attacker_mods):
         else:
             defender.status.append("WeakPsn")
             defender.counter[0] = 3
+
         attacker_mods[2] = 0
 
     # Dash
@@ -155,23 +183,18 @@ def get_action_effects(attacker, defender, action, attacker_mods):
             print(attacker.name + " Dashed and reduced " + defender.name + "'s Stamina and Mana!")
 
             # Crit
-            if attacker_mods[0] == 5 and attacker_mods[1] == 1:
+            if attacker_mods[0] == 5:
                 defender.stamina -= int(attacker.level * 1.75) + 1
                 defender.mana -= int(attacker.level * 1.75) + 1
 
-            # Crit and low_stat_mod, or normal
-            elif (attacker_mods[0] == 5 and attacker_mods[1] == 0.5) or (
-                    attacker_mods[0] == 1 and attacker_mods[1] == 1):
+            # Normal
+            else:
                 defender.stamina -= int(attacker.level * 1.75 / 2) + 1
                 defender.mana -= int(attacker.level * 1.75 / 2) + 1
-
-            # no crit and low_stat_mod
-            else:
-                defender.stamina -= int(attacker.level * 1.75 / 4) + 1
-                defender.mana -= int(attacker.level * 1.75 / 4) + 1
         else:
-            print("Ability failed due to low stats!")
+            print(attacker.name + "'s Ability failed!")
         # Sets misc multiplier to 0 to prevent damage being dealt
+
         attacker_mods[2] = 0
 
     # Might
@@ -184,8 +207,10 @@ def get_action_effects(attacker, defender, action, attacker_mods):
             print(attacker.name + "'s Might eliminates Stamina costs for them next turn!")
             attacker.status.append("Might")
         else:
-            print("Ability failed due to low stats!")
+            print(attacker.name + "'s Ability failed!")
+
         attacker_mods[2] = 0
+
     elif action[0] == "Focus":
         if attacker_mods[1] == 0.5:
             success = rng(2)
@@ -195,8 +220,10 @@ def get_action_effects(attacker, defender, action, attacker_mods):
             print(attacker.name + "'s Focus doubles their Critical chance for the next turn!")
             attacker.status.append("Focus")
         else:
-            print("Ability failed due to low stats!")
+            print(attacker.name + "'s Ability failed!")
+
         attacker_mods[2] = 0
+
     elif action[0] == "Potion":
         if attacker_mods[1] == 0.5:
             success = rng(2)
@@ -215,7 +242,47 @@ def get_action_effects(attacker, defender, action, attacker_mods):
         if success == 1:
             attacker = get_pickpocket_crystals(attacker, defender)
         else:
-            print("Ability failed due to low stats!")
+            print(attacker.name + "'s Ability failed!")
+
+        attacker_mods[2] = 0
+
+    elif action[0] == "Pact":
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            if attacker_mods[0] == 5:
+                defender.hp -= int(defender.level * 1.75 * defender.power / 3 * 2)
+            else:
+                defender.hp -= int(defender.level * 1.75 * defender.power / 3)
+            print(attacker.name + "'s Pact reduced everyone's HP!")
+        else:
+            print(attacker.name + "'s Ability failed!")
+
+        attacker_mods[2] = 0
+
+    elif action[0] == "Ritual":
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            ritual_number = rng(5) - 1
+            ritual_class = ritual_mobs[ritual_number]
+            if attacker_mods[0] == 5:
+                ritual_mob = Mob(attacker.level, ritual_class)
+            else:
+                ritual_level = int(attacker.level / 2)
+                if ritual_level <= 0:
+                    ritual_level = 1
+                ritual_mob = Mob(ritual_level, ritual_class)
+            attacker.status.append("Ritual")
+            ritual_mob.counter[1] = 5
+            print(attacker.name + "'s Ritual summoned a Level " + str(ritual_mob.level) + " " + ritual_mob.name + "!")
+        else:
+            print(attacker.name + "'s Ability failed!")
+
         attacker_mods[2] = 0
 
     # Mob actions
@@ -236,6 +303,9 @@ def get_action_effects(attacker, defender, action, attacker_mods):
             else:
                 print(attacker.name + "'s Scream scared " + defender.name + " into submission!")
                 print(defender.name + " lost Power!")
+        else:
+            print(attacker.name + "'s Ability failed!")
+
         attacker_mods[2] = 0
 
     elif action[0] == "Cower":
@@ -253,9 +323,93 @@ def get_action_effects(attacker, defender, action, attacker_mods):
                 print(attacker.name + "'s Defense has reached its maximum!")
             else:
                 print(attacker.name + "'s Cower raised its defense!")
+        else:
+            print(attacker.name + "'s Ability failed!")
+
         attacker_mods[2] = 0
 
-    return attacker, defender, attacker_mods
+    elif action[0] == "Stomp":
+        if attacker_mods[0] == 5:
+            defender.speed -= 2
+        else:
+            defender.speed -= 1
+        if defender.speed <= 0:
+            defender.speed = 1
+            print(defender.name + 's Speed has reached its minimum!')
+        else:
+            print("Stomp reduced " + defender.name + "'s Speed!")
+
+    elif action[0] == "Rest":
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            attacker.stamina += 5 * attacker.level
+            if attacker.stamina >= attacker.max_stamina:
+                attacker.stamina = attacker.max_stamina
+            print(attacker.name + "'s Rest restored their Stamina!")
+        else:
+            print(attacker.name + "'s Ability failed!")
+
+        attacker_mods[2] = 0
+
+    elif action[0] == "Toxic Brew":
+        if attacker_mods[0] == 5:
+            defender.mana -= 2
+        else:
+            defender.mana -= 1
+        if defender.mana <= 0:
+            defender.mana = 0
+            print(defender.name + "'s Mana has reached its minimum!")
+        print(attacker.name + "'s Toxic Brew reduced " + defender.name + "'s Mana!")
+
+    elif action[0] == "Magic Broom":
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            defender.stamina = int(defender.stamina / 2)
+            if defender.stamina <= 0:
+                defender.stamina = 0
+            print(attacker.name + "'s Magic Broom halved " + defender.name + "'s Stamina!")
+        else:
+            print(attacker.name + "'s Ability failed!")
+
+        attacker_mods[2] = 0
+
+    elif action[0] == "Last Resort":
+        damage = int(attacker.max_hp / 2)
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            defender.hp -= damage
+            print(attacker.name + " is desperate! Last Resort deals " + str(damage) + " damage!")
+        else:
+            print(attacker.name + "'s Ability failed!")
+
+        attacker_mods[2] = 0
+
+    elif action[0] == "Skill Swap":
+        new_power = attacker.defense
+        new_defense = attacker.power
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            defender.power = new_power
+            defender.defense = new_defense
+            print(attacker.name + "'s Skill Swap switched their Power and Defense!")
+        else:
+            print(attacker.name + "'s Ability failed!")
+
+        attacker_mods[2] = 0
+
+    return attacker, defender, attacker_mods, ritual_mob
 
 
 # Determines result of actions
@@ -276,6 +430,7 @@ def turn_action(attacker, defender, action):
     attacker = action_results[0]
     defender = action_results[1]
     attacker_mods = action_results[2]
+    ritual_mob = action_results[3]
     extra_mods = get_mods(attacker, defender_mods)
     attacker = extra_mods[0]
     defender_mods = extra_mods[1]
@@ -299,4 +454,4 @@ def turn_action(attacker, defender, action):
         print(attacker.name + " attacks " + defender.name + " with " + attacker.actions[action][0] + " for " +
               str(damage) + " damage!")
 
-    return attacker, defender
+    return attacker, defender, ritual_mob
