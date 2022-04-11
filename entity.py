@@ -1,3 +1,5 @@
+from random import randint
+
 max_xp = [0, 10, 30, 60, 100, 150]  # TODO: Array that sets players exp goals
 
 
@@ -13,7 +15,7 @@ class Player:  # Creates the player instance
         self.power = player_class[4]  # base power from player class
         self.defense = player_class[5]  # base defense from player class
         self.speed = player_class[6]  # base speed from player class
-        self.player_perks = [0, 0, 0, 0, 0, 0, 0]  # perks towards each base stat (0 is critical chance, 1-6 are stats)
+        self.perks = [0, 0, 0, 0, 0, 0, 0]  # perks towards each base stat (0 is critical chance, 1-6 are stats)
         self.actions = self.player_class[7]  # List for storing available actions based on class and gear
         self.level = 1
         self.xp = 0
@@ -31,12 +33,12 @@ class Player:  # Creates the player instance
         self.counter = [0]
 
     def set_stats(self):
-        self.hp = (self.player_class[1] + self.player_perks[1]) * self.level
-        self.mana = (self.player_class[2] + self.player_perks[2]) * self.level
-        self.stamina = (self.player_class[3] + self.player_perks[3]) * self.level
-        self.power = (self.player_class[4] + self.player_perks[4]) * self.level
-        self.defense = (self.player_class[5] + self.player_perks[5]) * self.level
-        self.speed = (self.player_class[6] + self.player_perks[6]) * self.level
+        self.hp = (self.player_class[1] + self.perks[1]) * self.level
+        self.mana = (self.player_class[2] + self.perks[2]) * self.level
+        self.stamina = (self.player_class[3] + self.perks[3]) * self.level
+        self.power = (self.player_class[4] + self.perks[4]) * self.level
+        self.defense = (self.player_class[5] + self.perks[5]) * self.level
+        self.speed = (self.player_class[6] + self.perks[6]) * self.level
         self.max_xp = max_xp[self.level]
         self.max_hp = self.hp
         self.max_mana = self.mana
@@ -46,8 +48,12 @@ class Player:  # Creates the player instance
 
 class Mob:
     def __init__(self, floor, stats):
+        self.mob_class = stats
         self.level = floor
         self.status = []
+        self.actions = self.mob_class[7]
+        self.last_action = 3
+        self.perks = [0, 0, 0, 0, 0, 0, 0]
 
         # 0 = Poison counter
         self.counter = [0]
@@ -63,6 +69,14 @@ class Mob:
         self.max_hp = self.hp
         self.max_mana = self.mana
         self.max_stamina = self.stamina
+
+        # Calculates mob perks
+        while (sum(self.perks) < self.level) and 0 in self.perks:
+            random_perk = randint(0, 6)
+            if self.perks[random_perk] == 0:
+                self.perks[random_perk] = randint(0, (self.level + 1 - sum(self.perks)))
+        if random_perk == 0:
+            self.perks[random_perk] *= 5
 
         # Experience yield = average of stats
         self.xp_yield = int((self.hp + self.mana + self.stamina + self.power + self.defense + self.speed) / 6)

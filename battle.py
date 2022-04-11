@@ -2,7 +2,7 @@ from random import randint
 import actions
 import entity
 from misc import rng
-import mobs
+import mob_data
 import status
 import summons
 
@@ -11,7 +11,7 @@ import summons
 
 # Generates a new mob
 def generate_mob(floor):
-    mob_class = mobs.floor_mobs[floor - 1][randint(0, len(mobs.floor_mobs[floor - 1]) - 1)]
+    mob_class = mob_data.floor_mobs[floor - 1][randint(0, len(mob_data.floor_mobs[floor - 1]) - 1)]
     new_mob = entity.Mob(floor, mob_class)
 
     return new_mob
@@ -36,29 +36,29 @@ def output_stats(player, mob):
 def help_menu(player):
     # Weapon
     if player.player_class[0] == "Healer":
-        print(player.actions[0][0] + ": Standard attack. Damage depends on power. Costs mana.")
+        print(player.actions[0][0] + ": Standard attack. Damage depends on Power. Costs Mana.")
     else:
-        print(player.actions[0][0] + ": Standard attack. Damage depends on power. Costs stamina.")
+        print(player.actions[0][0] + ": Standard attack. Damage depends on Power. Costs Stamina.")
 
     # Special
     if player.player_class[0] == "Warrior":
-        print(player.actions[1][0] + ": Halves mob defense against next hit. Costs stamina.")
+        print(player.actions[1][0] + ": Halves enemy Defense against next hit. Costs Stamina.")
     elif player.player_class[0] == "Archer":
-        print(player.actions[1][0] + ": Deals double damage on a crit. Costs stamina.")
+        print(player.actions[1][0] + ": Deals double damage on a Critical hit. Costs Stamina.")
     elif player.player_class[0] == "Healer":
-        print(player.actions[1][0] + ": Deals 40% of hex for 3 turns. Costs mana.")
+        print(player.actions[1][0] + ": Deals 40% of Hex for 3 turns. Costs Mana.")
     else:
-        print(player.actions[1][0] + ": Decreases enemy's stamina and mana. Costs stamina.")
+        print(player.actions[1][0] + ": Decreases enemy's Stamina and Mana. Costs Stamina.")
 
     # Ability
     if player.player_class[0] == "Warrior":
-        print(player.actions[2][0] + ": Decreases speed by 1, but eliminates stamina cost of next hit.")
+        print(player.actions[2][0] + ": Decreases Speed by 1, but eliminates Stamina cost of next action.")
     elif player.player_class[0] == "Archer":
-        print(player.actions[2][0] + ": Decreases defense by 2, but doubles crit chance of next hit.")
+        print(player.actions[2][0] + ": Decreases Defense by 2, but doubles Critical chance of next action.")
     elif player.player_class[0] == "Healer":
-        print(player.actions[2][0] + ": Heals the user. Healing is halved after each use. Costs mana.")
+        print(player.actions[2][0] + ": Heals the user. Healing is halved after each use. Costs Mana.")
     else:
-        print(player.actions[2][0] + ": Steals extra crystals, but costs mana.")
+        print(player.actions[2][0] + ": Steals extra crystals, but costs Mana.")
 
     # Summon
     print("Summon: Opens shop menu.\n")
@@ -78,7 +78,7 @@ def player_turn(player, mob):
         print("Help\n")
         action = input("What will " + player.name + " do?\n").lower()
         if action == player.actions[0][0].lower():  # Standard Weapon
-            turn_results = actions.player_action(player, mob, 0)  # Go to action zero function
+            turn_results = actions.turn_action(player, mob, 0)
             turn_complete = True
         if action == player.actions[1][0].lower():  # Special Weapon
 
@@ -86,10 +86,10 @@ def player_turn(player, mob):
             if "Psn" in mob.status or "WeakPsn" in mob.status or "CritPsn" in mob.status:
                 print("Mob already poisoned!")
             else:
-                turn_results = actions.player_action(player, mob, 1)
+                turn_results = actions.turn_action(player, mob, 1)
                 turn_complete = True
         if action == player.actions[2][0].lower():  # Ability
-            turn_results = actions.player_action(player, mob, 2)
+            turn_results = actions.turn_action(player, mob, 2)
             turn_complete = True
         if action == "summon":
             summons.summon_menu(player)  # Shop
@@ -100,14 +100,21 @@ def player_turn(player, mob):
 
 
 # Mob turn
-def mob_turn(player, mob):  # TODO: Make mob attacks unique and cost stamina/mana
-    damage = int((mob.power * (mob.level + 1) - (player.defense * (player.level + 1) / 2)) / 5)
-    if damage <= 0:
-        damage = 1
-    player.hp -= damage
-    print(mob.name + " attacks " + player.name + " for " + str(damage) + " damage!")
+def mob_turn(player, mob):
+    while True:
+        action = (mob.actions[randint(0, 2)][0]).lower()
+        if action != mob.last_action:
+            break
+    if action == mob.actions[0][0].lower():  # Standard Weapon
+        turn_results = actions.turn_action(mob, player, 0)
+    elif action == mob.actions[1][0].lower():  # Special Weapon
+        turn_results = actions.turn_action(mob, player, 1)
+    else:  # Ability
+        turn_results = actions.turn_action(mob, player, 2)
 
-    return player, mob
+    mob.last_action = action
+
+    return turn_results
 
 
 # Levels up the player
@@ -120,9 +127,9 @@ def level_up(player):
     while perk_choice not in perk_list:
         perk_choice = input("Choose a stat to upgrade: Critical, HP, Mana, Stamina, Power, Defense, Speed\n").lower()
     if perk_choice == "critical":
-        player.player_perks[0] += 5
+        player.perks[0] += 5
     else:
-        player.player_perks[perk_list.index(perk_choice)] += 1
+        player.perks[perk_list.index(perk_choice)] += 1
 
     return player
 
@@ -178,21 +185,25 @@ def game(player):
 
             # Sets turn order
             if player.speed > mob.speed:
-                turn_order = 0
-            elif mob.speed > player.speed:
                 turn_order = 1
+            elif mob.speed > player.speed:
+                turn_order = 2
             else:
                 turn_order = rng(2)
 
             # Decides who attacks first
             if turn_order == 1:  # Player goes first
-                player_turn(player, mob)
+                turn_results = player_turn(player, mob)
+                player = turn_results[0]
+                mob = turn_results[1]
                 if mob.hp > 0:
                     turn_results = mob_turn(player, mob)
-                    player = turn_results[0]
-                    mob = turn_results[1]
+                    mob = turn_results[0]
+                    player = turn_results[1]
             elif turn_order == 2:  # Mob goes first
-                mob_turn(player, mob)
+                turn_results = mob_turn(player, mob)
+                mob = turn_results[0]
+                player = turn_results[1]
                 if player.hp > 0:
                     turn_results = player_turn(player, mob)
                     player = turn_results[0]

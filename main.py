@@ -1,7 +1,7 @@
 import battle
-import player_classes
+import player_data
 import entity
-import player_classes
+import player_data
 
 
 def choose_class():
@@ -12,13 +12,13 @@ def choose_class():
         print("Classes: Warrior, Archer, Healer, Thief\n")
         class_choice = input("What class are you?\n").lower()
     if class_choice == "warrior":
-        chosen_class = player_classes.warrior_class
+        chosen_class = player_data.warrior
     elif class_choice == "archer":
-        chosen_class = player_classes.archer_class
+        chosen_class = player_data.archer
     elif class_choice == "healer":
-        chosen_class = player_classes.healer_class
+        chosen_class = player_data.healer
     elif class_choice == "thief":
-        chosen_class = player_classes.thief_class
+        chosen_class = player_data.thief
     else:
         print("Error: Invalid Class.")
 

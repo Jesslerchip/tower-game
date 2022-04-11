@@ -14,23 +14,21 @@ def get_mods(attacker, defender_mods):
     return attacker, defender_mods
 
 
-def get_critical(entity):
-    if "Focus0" in entity.status:
+def get_critical(entity, action):
+    if "Focus" in entity.status:
         critical = rng(50)
-        entity.status.remove("Focus0")
+        entity.status.remove("Focus")
     else:
         critical = rng(100)
-    if critical < entity.player_perks[0]:
+    if critical < entity.perks[0]:
         print("Critical Hit!")
-        if entity.action == "crossbow":
+        if action == "crossbow":
+            print("Critical damage doubled by " + entity.name + "'s Crossbow!")
             mod_critical = 10
         else:
             mod_critical = 5
     else:
         mod_critical = 1
-    if "Focus1" in entity.status:
-        entity.status = list(
-            map(lambda status_name: status_name.replace("Focus1", "Focus0"), entity.status))
 
     return mod_critical
 
@@ -61,6 +59,8 @@ def get_action_cost(entity, action):
 
     # Special cost
     if action[0] == entity.actions[1][0]:
+
+        # Player Spcials
         if action[0] == "Axe":
             if "Might" not in entity.status:
                 entity.stamina -= int(entity.level * 1.75 * 5)
@@ -71,15 +71,22 @@ def get_action_cost(entity, action):
         elif action[0] == "Poison":
             entity.mana -= int(entity.level * 1.75)
 
+        # Mob Specials
+        elif action[0] == "Scream":
+            entity.mana -= int(entity.level * 1.75)
+
     # Ability cost
     if action[0] == entity.actions[2][0]:
+
+        # Player abilities
         if action[0] == "Might":
-            if entity.speed <= 0:  # Ensures speed never drops below 1
+            entity.speed -= 1
+            if entity.speed <= 0:  # Ensures Speed never drops below 1
                 entity.speed = 1
             entity.mana -= int(entity.level * 1.75 * 2)
         elif action[0] == "Focus":
             entity.defense -= 2
-            if entity.defense <= 0:  # Ensures player defense never drops below 1
+            if entity.defense <= 0:  # Ensures attacker Defense never drops below 1
                 entity.defense = 1
             entity.mana -= int(entity.level * 1.75 * 2)
         elif action[0] == "Potion":
@@ -88,7 +95,13 @@ def get_action_cost(entity, action):
         elif action[0] == "Pickpocket":
             entity.mana -= int(entity.level * 1.75 * 2)
 
-    # Checks if player went below stamina or mana minimum
+        # Mob abilities
+        elif action[0] == "Cower":
+            entity.speed -= 1
+            if entity.speed <= 0:  # Ensures Speed never drops below 1
+                entity.speed = 1
+
+    # Checks if attacker went below stamina or mana minimum
     if entity.stamina >= 0 and entity.mana >= 0:
         low_stat_mod = 1
     if entity.stamina < 0:
@@ -110,6 +123,7 @@ def get_action_cost(entity, action):
 def get_action_effects(attacker, defender, action, attacker_mods):
     # If action is special
 
+    # Player actions
     # Axe
     if action[0] == "Axe":
         attacker.status.append("Axe1")  # Axe effect will be triggered next turn
@@ -179,7 +193,7 @@ def get_action_effects(attacker, defender, action, attacker_mods):
             success = 1
         if success == 1:
             print(attacker.name + "'s Focus doubles their Critical chance for the next turn!")
-            attacker.status.append("Focus1")
+            attacker.status.append("Focus")
         else:
             print("Ability failed due to low stats!")
         attacker_mods[2] = 0
@@ -204,46 +218,85 @@ def get_action_effects(attacker, defender, action, attacker_mods):
             print("Ability failed due to low stats!")
         attacker_mods[2] = 0
 
+    # Mob actions
+
+    elif action[0] == "Scream":
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            if attacker_mods[0] == 5:
+                defender.power -= 2
+            else:
+                defender.power -= 1
+            if defender.power <= 0:
+                defender.power = 1
+                print(defender.name + "'s Power has reached its minimum!")
+            else:
+                print(attacker.name + "'s Scream scared " + defender.name + " into submission!")
+                print(defender.name + " lost Power!")
+        attacker_mods[2] = 0
+
+    elif action[0] == "Cower":
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            if attacker_mods[0] == 5:
+                attacker.defense += 2
+            else:
+                attacker.defense += 1
+            if attacker.defense >= 101:
+                attacker.defense = 100
+                print(attacker.name + "'s Defense has reached its maximum!")
+            else:
+                print(attacker.name + "'s Cower raised its defense!")
+        attacker_mods[2] = 0
+
     return attacker, defender, attacker_mods
 
 
-def player_action(player, mob, action):  # If player chooses action zero
-
+# Determines result of actions
+def turn_action(attacker, defender, action):
     # = [crit_multiplier, low_stat_multiplier, misc_multiplier]
-    player_mods = [1, 1, 1]  # Modifiers for player
-
+    attacker_mods = [1, 1, 1]  # Modifiers for attacker
     # = [defense multiplier]
-    mob_mods = [1]  # Modifiers for mobs
+    defender_mods = [1]  # Modifiers for defender
 
     # Handles setting multipliers
-    player_multiplier = 1
-    mob_multiplier = 1
-    player_mods[0] = get_critical(player)
-    action_cost = get_action_cost(player, player.actions[action])
-    player = action_cost[0]
-    player_mods[1] = action_cost[1]
-    action_results = get_action_effects(player, mob, player.actions[action], player_mods)
-    player = action_results[0]
-    mob = action_results[1]
-    player_mods = action_results[2]
-    extra_mods = get_mods(player, mob_mods)
-    player = extra_mods[0]
-    mob_mods = extra_mods[1]
+    attacker_multiplier = 1
+    defender_multiplier = 1
+    attacker_mods[0] = get_critical(attacker, action)
+    action_cost = get_action_cost(attacker, attacker.actions[action])
+    attacker = action_cost[0]
+    attacker_mods[1] = action_cost[1]
+    action_results = get_action_effects(attacker, defender, attacker.actions[action], attacker_mods)
+    attacker = action_results[0]
+    defender = action_results[1]
+    attacker_mods = action_results[2]
+    extra_mods = get_mods(attacker, defender_mods)
+    attacker = extra_mods[0]
+    defender_mods = extra_mods[1]
 
     # Combines multipliers
-    for i in player_mods:
-        player_multiplier *= i
-    for i in mob_mods:
-        mob_multiplier *= i
+    for i in attacker_mods:
+        attacker_multiplier *= i
+    for i in defender_mods:
+        defender_multiplier *= i
 
-    # If action should damage mob
-    if player_multiplier != 0:
-        damage = int(((player.power * player_multiplier * (player.level + 1)) - (mob.defense * mob_multiplier *
-                                                                                 (mob.level + 1) / 2)) / 5)
+    # If action should damage defender
+    if attacker_multiplier != 0:
+
+        # Damage formula
+        damage = int(((attacker.power * attacker_multiplier * (attacker.level + 1)) -
+                      (defender.defense * defender_multiplier * (defender.level + 1) / 2)) / 5)
+
         if damage <= 0:
             damage = 1
-        mob.hp -= damage  # Mob's health is decreased
-        print(player.name + " attacks " + mob.name + " with " + player.actions[action][0] + " for " + str(damage) +
-              " damage!")
+        defender.hp -= damage  # Defender's health is decreased
+        print(attacker.name + " attacks " + defender.name + " with " + attacker.actions[action][0] + " for " +
+              str(damage) + " damage!")
 
-    return player, mob
+    return attacker, defender
