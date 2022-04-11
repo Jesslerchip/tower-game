@@ -26,7 +26,7 @@ ritual_actions = [("Slash", 0), ("Scream", 2), ("Skill Swap", 2)]
 # Classes for the ritual mobs
 zombie = ["Zombie", 10, 8, 10, 10, 8, 10, ritual_actions]
 skeleton = ["Skeleton", 8, 8, 10, 10, 10, 10, ritual_actions]
-ghost = ["Ghost", 8, 10, 8, 10, 10, 10, 10, ritual_actions]
+ghost = ["Ghost", 8, 10, 8, 10, 10, 10, ritual_actions]
 demon = ["Demon", 10, 10, 10, 10, 8, 8, ritual_actions]
 ghoul = ["Ghoul", 10, 10, 8, 10, 8, 10, ritual_actions]
 

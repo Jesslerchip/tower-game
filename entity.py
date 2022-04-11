@@ -1,6 +1,6 @@
 from random import randint
 
-max_xp = [0, 10, 30, 60, 100, 150]  # TODO: Array that sets players exp goals
+max_xp = [0, 10, 30, 60, 100, 150, 200]  # TODO: Array that sets players exp goals
 
 
 class Player:  # Creates the player instance
@@ -33,7 +33,7 @@ class Player:  # Creates the player instance
         self.counter = [0]
 
     def set_stats(self):
-        self.hp = (self.player_class[1] + self.perks[1]) * pow(self.level, 2)
+        self.hp = (self.player_class[1] + self.perks[1]) * int(pow(self.level, 2) / 2) + 10
         self.mana = (self.player_class[2] + self.perks[2]) * self.level
         self.stamina = (self.player_class[3] + self.perks[3]) * self.level
         self.power = (self.player_class[4] + self.perks[4]) * self.level
@@ -57,19 +57,19 @@ class Mob:
 
         # Calculates mob perks
         random_perk = 0
-        while (sum(self.perks) < self.level) and 0 in self.perks:
+        while (sum(self.perks) < int(self.level / 2)) and 0 in self.perks:
             random_perk = randint(0, 6)
             if self.perks[random_perk] == 0:
-                self.perks[random_perk] = randint(0, (self.level + 1 - sum(self.perks)))
+                self.perks[random_perk] = randint(0, (int(self.level / 2 + 1) - sum(self.perks)))
         if random_perk == 0:
-            self.perks[random_perk] *= 5
+            self.perks[random_perk] *= 4
 
         # 0 = Poison counter, 1 = Ritual counter
         self.counter = [0, 0]
 
         # Stat value = base stat * level
         self.name = stats[0]
-        self.hp = (stats[1] + self.perks[1]) * pow(self.level, 2)
+        self.hp = (stats[1] + self.perks[1]) * int(pow(self.level, 2) / 2) + 10
         self.mana = (stats[2] + self.perks[2]) * self.level
         self.stamina = (stats[3] + self.perks[3]) * self.level
         self.power = (stats[4] + self.perks[4]) * self.level

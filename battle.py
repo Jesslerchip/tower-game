@@ -122,8 +122,8 @@ def player_turn(player, mob, ritual_mob):
 # Mob turn
 def mob_turn(attacker, defender):
     while True:
-        action = (attacker.actions[randint(0, 2)])[0].lower()
-        if action != attacker.last_action:
+        action = (attacker.actions[randint(0, 2)][0]).lower()
+        if action[0] != attacker.last_action:
             break
     if action == attacker.actions[0][0].lower():  # Standard Weapon
         turn_results = actions.turn_action(attacker, defender, 0)
@@ -147,7 +147,7 @@ def level_up(player):
     while perk_choice not in perk_list:
         perk_choice = input("Choose a stat to upgrade: Critical, HP, Mana, Stamina, Power, Defense, Speed\n").lower()
     if perk_choice == "critical":
-        player.perks[0] += 5
+        player.perks[0] += 4
     else:
         player.perks[perk_list.index(perk_choice)] += 1
 
@@ -227,7 +227,7 @@ def game(player):
                 if mob.hp > 0:  # Mob takes its turn
 
                     # Decide who the target is
-                    if ritual_mob.counter != 0:
+                    if ritual_mob.name != "null" and ritual_mob.hp > 0:
                         opponent_number = rng(2)
                         if opponent_number == 1:
                             opponent = player
@@ -251,7 +251,7 @@ def game(player):
             elif turn_order == 2:  # Mob goes first
 
                 # Decide who the target is
-                if ritual_mob.counter != 0:
+                if ritual_mob.name != "null" and ritual_mob.hp > 0:
                     opponent_number = rng(2)
                     if opponent_number == 1:
                         opponent = player
@@ -284,7 +284,9 @@ def game(player):
 
                 ritual_mob.counter[1] -= 1  # Decrease ritual mob's lifespan counter
 
-            if ritual_mob.counter[1] <= 0 or ritual_mob.hp <= 0:  # If ritual mob's lifespan is out or if it died
+            if (ritual_mob.counter[1] <= 0 or ritual_mob.hp <= 0) and ritual_mob.name != "null":
+
+                # If ritual mob's lifespan is out or if it died
                 print(ritual_mob.name + " has gone back to the world of the undead!")
 
                 # Erase ritual mob with null data
