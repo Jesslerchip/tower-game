@@ -4,7 +4,7 @@ warrior_slot_1 = [("Rusted sword", "Well, it's better than your fists.", 100),
 
 warrior_slot_2 = [("Blunt axe", "Basically a rock on a stick.", 100),
                   ("Hatchet", "Capable of chopping off stray limbs, of trees and trolls alike.", 100)]
-warrior_slot_3 = ["none"]
+warrior_gear = [warrior_slot_1, warrior_slot_2]
 
 # Archer Gear
 archer_slot_1 = [("Bent longbow", "Hardly an upgrade from a child's slingshot.", 100),
@@ -12,20 +12,21 @@ archer_slot_1 = [("Bent longbow", "Hardly an upgrade from a child's slingshot.",
 archer_slot_2 = [("Crooked crossbow", "Shoddy craftsmanship makes for shoddy aim. Shame on you.", 100),
                  ("Precise crossbow", "Guaranteed to get a bullseye, or your crystals back! (Depends on user's skill "
                                       "and aim. No refunds.)"), 100]
-archer_slot_3 = ["none"]
+archer_gear = [archer_slot_1, archer_slot_2]
 
 # Healer Gear
 healer_slot_1 = [("Weakened curse", "Hurts the enemy's tender little feewings.", 100),
                  ("Dark hex", "An incantation that does damage. What more can you really ask for?", 100)]
 healer_slot_2 = [("Poison berries", "Where did you find these, in your backyard?", 100),
                  ("Belladonna", "A plant that actually does damage. Now we're talking.", 100)]
+healer_gear = [healer_slot_1, healer_slot_2]
 
 # Thief Gear
 thief_slot_1 = [("Pocket knife", "Care to do a whittle whittling?", 100),
                 (
                 "Sharp dagger", "A light, sharp weapon. Less damage than a sword, but it doesn't weigh you down.", 100)]
 thief_slot_2 = ["none"]
-thief_slot_3 = ["none"]
+thief_gear = [thief_slot_1, thief_slot_2]
 
 # Armor
 armor = [("Cotton rags", "", 100),
@@ -37,141 +38,53 @@ armor = [("Cotton rags", "", 100),
 
 
 def summon_menu(player):
-    # TODO: actually make the buying system work
     choice = ""
     while choice != "exit":
         print_shop(player)
         print(player.name + "'s crystals: " + str(player.crystals))
+
         choice = input("Make a selection (gear type): ").lower()
 
         if choice == "weapon":
-            buy_weapon(player)
+            buy(player, 0)
 
         if choice == "special":
-            buy_special(player)
+            buy(player, 1)
 
         elif choice == "armor":
-            buy_armor(player)
+            buy(player, 2)
 
     return
 
 
 def print_shop(player):
-    if player.player_class[0] == "Warrior":
-        if player.weapon < (len(warrior_slot_1) - 1):
-            print("Weapon: ".ljust(10) + warrior_slot_1[player.weapon + 1][0].ljust(20)
-                  + str(warrior_slot_1[player.weapon + 1][2]) + " crystals")  # next main weapon available to player
+    i = 0
+    for gear_type in player.gear:
+        if player.gear_level[i] < len(gear_type) - 1:
+            print(gear_type[i][0].ljust(20, ".") + str(gear_type[i][2]) + " crystals")
+            print("    " + gear_type[i][1])
         else:
-            print("--Max weapon achieved--")
-        if player.special < (len(warrior_slot_2) - 1):
-            print("Special: ".ljust(10) + warrior_slot_2[player.special + 1][0].ljust(20)
-                  + str(warrior_slot_2[player.special + 1][2]) + " crystals")  # next special weapon available to player
-        else:
-            print("--Max special achieved--")
+            print("--Max gear achieved--")
+        i += 1
 
-    if player.player_class[0] == "Archer":
-        if player.weapon < (len(archer_slot_1) - 1):
-            print("Weapon: ".ljust(10) + archer_slot_1[player.weapon + 1][0].ljust(20)
-                  + str(archer_slot_1[player.weapon + 1][2]) + " crystals")  # next main weapon available to player
-        else:
-            print("--Max weapon achieved--")
-        if player.special < (len(archer_slot_2) - 1):
-            print("Special: ".ljust(10) + archer_slot_2[player.special + 1][0].ljust(20)
-                  + str(archer_slot_2[player.special + 1][2]) + " crystals")  # next special weapon available to player
-        else:
-            print("--Max special achieved--")
+    if player.gear_level[i] < len(armor) - 1:
+        print(armor[i + 1][0].ljust(20, ".") + str(armor[i][2]) + " crystals")
+        # print("    " + gear_type[i][1])
 
-    if player.player_class[0] == "Healer":
-        if player.weapon < (len(healer_slot_1) - 1):
-            print("Weapon: ".ljust(10) + healer_slot_1[player.weapon + 1][0].ljust(20)
-                  + str(healer_slot_1[player.weapon + 1][2]) + " crystals")  # next main weapon available to player
+    print("[Exit]\n")
 
-        else:
-            print("--Max weapon achieved--")
-        if player.special < (len(healer_slot_2) - 1):
-            print("Special: ".ljust(10) + healer_slot_2[player.special + 1][0].ljust(20)
-                  + str(healer_slot_2[player.special + 1][2]) + " crystals")  # next special weapon available to player
-        else:
-            print("--Max special achieved--")
 
-    if player.player_class[0] == "Thief":
-        if player.weapon < (len(thief_slot_1) - 1):
-            print("Weapon: ".ljust(10) + thief_slot_1[player.weapon + 1][0].ljust(20)
-                  + str(thief_slot_1[player.weapon + 1][2]) + " crystals")  # next main weapon available to player
+def buy(player, choice):
+    if choice == len(player.gear_level) - 1:  # Armor
+        if player.crystals >= armor[len(player.gear_level) - 1][2]:
+            player.gear_level[choice] += 1
+            player.crystals -= armor[len(player.gear_level) - 1][2]
         else:
-            print("--Max weapon achieved--")
-        if player.special < (len(thief_slot_2) - 1):
-            print("Special: ".ljust(10) + thief_slot_2[player.special + 1][0].ljust(20)
-                  + str(thief_slot_2[player.special + 1][2]) + " crystals")  # next special weapon available to player
-        else:
-            print("--Max special achieved--")
-
-    if player.armor < (len(armor) - 1):
-        print("Armor: ".ljust(10) + armor[player.armor + 1][0].ljust(20)
-              + str(armor[player.armor + 1][2]) + " crystals")
+            print("You don't have enough crystals!")
     else:
-        print("--Max armor achieved--")
+        if player.crystals >= player.gear[choice][player.gear_level[choice]][2]:
+            player.gear_level[choice] += 1
+            player.crystals -= player.gear[choice][player.gear_level[choice]][2]
+        else:
+            print("You don't have enough crystals!")
 
-    print("Exit\n")
-
-
-def buy_weapon(player):
-    if player.player_class[0] == "Warrior":
-        if player.crystals >= warrior_slot_1[player.weapon + 1][2]:
-            player.crystals -= warrior_slot_1[player.weapon + 1][2]
-            player.weapon += 1
-        else:
-            print("You don't have enough crystals for that!\n")
-    elif player_class == "Archer":
-        if player.crystals >= archer_slot_1[player.weapon + 1][2]:
-            player.crystals -= archer_slot_1[player.weapon + 1][2]
-            player.weapon += 1
-        else:
-            print("You don't have enough crystals for that!\n")
-    elif player_class == "Healer":
-        if player.crystals >= healer_slot_1[player.weapon + 1][2]:
-            player.crystals -= healer_slot_1[player.weapon + 1][2]
-            player.weapon += 1
-        else:
-            print("You don't have enough crystals for that!\n")
-    else:
-        if player.crystals >= healer_slot_1[player.weapon + 1][2]:
-            player.crystals -= healer_slot_1[player.weapon + 1][2]
-            player.weapon += 1
-        else:
-            print("You don't have enough crystals for that!\n")
-
-
-def buy_special(player):
-    if player.player_class[0] == "Warrior":
-        if player.crystals >= warrior_slot_2[player.special + 1][2]:
-            player.crystals -= warrior_slot_2[player.special + 1][2]
-            player.weapon += 1
-        else:
-            print("You don't have enough crystals for that!\n")
-    elif player_class == "Archer":
-        if player.crystals >= archer_slot_2[player.special + 1][2]:
-            player.crystals -= archer_slot_2[player.special + 1][2]
-            player.weapon += 1
-        else:
-            print("You don't have enough crystals for that!\n")
-    elif player_class == "Healer":
-        if player.crystals >= healer_slot_2[player.special + 1][2]:
-            player.crystals -= healer_slot_2[player.special + 1][2]
-            player.weapon += 1
-        else:
-            print("You don't have enough crystals for that!\n")
-    else:
-        if player.crystals >= healer_slot_2[player.special + 1][2]:
-            player.crystals -= healer_slot_2[player.special + 1][2]
-            player.special += 1
-        else:
-            print("You don't have enough crystals for that!\n")
-
-
-def buy_armor(player):
-    if player.crystals >= armor[player.armor + 1][2]:
-        player.crystals -= armor[player.armor + 1][2]
-        player.armor += 1
-    else:
-        print("You don't have enough crystals for that!\n")

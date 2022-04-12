@@ -11,6 +11,7 @@ class Player:  # Creates the player instance
         self.player_class = player_class
         self.perks = [0, 0, 0, 0, 0, 0, 0]  # perks towards each base stat (0 is critical chance, 1-6 are stats)
         self.actions = self.player_class[7]  # List for storing available actions based on class and gear
+        self.gear = self.player_class[8]
         self.level = 1
         self.xp = 0
         self.max_xp = 10  # Set by max_exp array
@@ -25,9 +26,7 @@ class Player:  # Creates the player instance
         self.max_stamina = player_class[1]
         self.crystals = 0
         self.status = []
-        self.weapon = 0  # Current level of player's weapon gear
-        self.special = 0  # Current level of player's special gear
-        self.armor = 0  # Current level of player's armor
+        self.gear_level = [0, 0, 0]  # Weapon, Special, Armor
 
         # 0 = Heal counter
         self.counter = [0]
