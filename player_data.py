@@ -14,8 +14,10 @@ necromage_actions = [("Athame", 0), ("Pact", 2), ("Ritual", 2)]  # Pact attacks 
 
 
 # Class = ["Name" (0), HP (1), Mana (2), Stamina (3), Power (4), Defense (5), Speed (6), Actions(7)]
+
 warrior = ["Warrior", 10, 8, 12, 15, 10, 8, warrior_actions, warrior_gear]
-archer = ["Archer", 6, 12, 10, 13, 10, 14, archer_actions, archer_gear]
+archer = ["Archer", 10, 6, 14, 13, 10, 12, archer_actions, archer_gear]
 healer = ["Healer", 15, 12, 8, 8, 12, 10, healer_actions, healer_gear]
 thief = ["Thief", 8, 10, 13, 12, 7, 15, thief_actions, thief_gear]
 necromage = ["Necromage", 8, 19, 8, 8, 10, 12, necromage_actions, []]
+

@@ -11,7 +11,7 @@ orc_actions = [("Smash", 0), ("Stomp", 0), ("Skill Swap", 2)]
 goblin = ["Goblin", 10, 10, 10, 10, 10, 10, goblin_actions]
 troll = ["Troll", 10, 10, 10, 10, 10, 10, troll_actions]
 witch = ["Witch", 10, 11, 10, 11, 9, 11, witch_actions]
-grendel = ["Grendel", 7, 5, 10, 13, 9, 20, grendel_actions]
+grendel = ["Grendel", 5, 5, 10, 13, 7, 20, grendel_actions]
 orc = ["Orc", 16, 6, 10, 8, 16, 8, orc_actions]
 
 floor_mobs = [[goblin],  # Floor 1

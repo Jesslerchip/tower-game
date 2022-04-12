@@ -4,6 +4,7 @@ import entity
 from misc import rng
 import mob_data
 import status
+import strings
 import summons
 
 
@@ -50,23 +51,25 @@ def output_stats(player, mob, ritual_mob):
 def help_menu(player):
     # Weapon
     if player.player_class[0] == "Healer":
-        print(player.actions[0][0] + ": Standard attack. Damage depends on Power. Costs Mana.")
+        print(player.actions[0][0] + strings.hex_desc)
     else:
-        print(player.actions[0][0] + ": Standard attack. Damage depends on Power. Costs Stamina.")
+        print(player.actions[0][0] + strings.standard_desc)
 
     # Special
     if player.player_class[0] == "Warrior":
-        print(player.actions[1][0] + ": Halves enemy Defense against next hit. Costs Stamina.")
+        print(player.actions[1][0] + strings.axe_desc)
     elif player.player_class[0] == "Archer":
-        print(player.actions[1][0] + ": Deals double damage on a Critical hit. Costs Stamina.")
+        print(player.actions[1][0] + strings.crossbow_desc)
     elif player.player_class[0] == "Healer":
-        print(player.actions[1][0] + ": Deals 40% of Hex for 3 turns. Costs Mana.")
-    else:
-        print(player.actions[1][0] + ": Decreases enemy's Stamina and Mana. Costs Stamina.")
+        print(player.actions[1][0] + strings.poison_desc)
+    elif player.player_class[0] == "Thief":
+        print(player.actions[1][0] + strings.dash_desc)
+    elif player.player_class[0] == "Necromage":
+        print(player.actions[1][0] + strings.pact_desc)
 
     # Ability
     if player.player_class[0] == "Warrior":
-        print(player.actions[2][0] + ": Decreases Speed by 1, but eliminates Stamina cost of next action.")
+        print(player.actions[2][0] + strings.might_desc)
     elif player.player_class[0] == "Archer":
         print(player.actions[2][0] + ": Decreases Defense by 2, but doubles Critical chance of next action.")
     elif player.player_class[0] == "Healer":
