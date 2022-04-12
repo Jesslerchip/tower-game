@@ -122,13 +122,13 @@ def buy_weapon(player):
             player.weapon += 1
         else:
             print("You don't have enough crystals for that!\n")
-    elif player_class == "Archer":
+    elif player.player_class == "Archer":
         if player.crystals >= archer_slot_1[player.weapon + 1][2]:
             player.crystals -= archer_slot_1[player.weapon + 1][2]
             player.weapon += 1
         else:
             print("You don't have enough crystals for that!\n")
-    elif player_class == "Healer":
+    elif player.player_class == "Healer":
         if player.crystals >= healer_slot_1[player.weapon + 1][2]:
             player.crystals -= healer_slot_1[player.weapon + 1][2]
             player.weapon += 1
@@ -149,13 +149,13 @@ def buy_special(player):
             player.weapon += 1
         else:
             print("You don't have enough crystals for that!\n")
-    elif player_class == "Archer":
+    elif player.player_class == "Archer":
         if player.crystals >= archer_slot_2[player.special + 1][2]:
             player.crystals -= archer_slot_2[player.special + 1][2]
             player.weapon += 1
         else:
             print("You don't have enough crystals for that!\n")
-    elif player_class == "Healer":
+    elif player.player_class == "Healer":
         if player.crystals >= healer_slot_2[player.special + 1][2]:
             player.crystals -= healer_slot_2[player.special + 1][2]
             player.weapon += 1

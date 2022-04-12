@@ -1,7 +1,6 @@
 import battle
 from player_data import warrior, archer, healer, thief, necromage
 import entity
-import player_data
 
 
 def choose_class():

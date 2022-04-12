@@ -16,26 +16,22 @@ def get_mods(attacker, defender_mods):
     return attacker, defender_mods
 
 
-def get_critical(entity, action):
+def get_critical(entity):
     critical = rng(100)
-    if critical < entity.perks[0]:
-        print("Critical Hit!")
+    if (critical < entity.perks[0]) or (critical - 50 < entity.perks[0] and "Focus" in entity.status):
+        print("Critical hit!")
+        mod_critical = 2
         if "Focus" in entity.status:
-            mod_critical = 4
-        else:
-            mod_critical = 2
+            entity.status.remove("Focus")
     else:
-        if "Focus" in entity.status:
-            mod_critical = 2
-        else:
-            mod_critical = 1
+        mod_critical = 1
 
     return mod_critical
 
 
 def get_pickpocket_crystals(attacker, defender):
     print("Ability succeeded!")
-    crystals = randint(defender.xp_yield / 2, defender.xp_yield * 2)  # Calculates crystal yield
+    crystals = randint(int(defender.xp_yield / 2), defender.xp_yield * 2)  # Calculates crystal yield
     if crystals <= 0:  # Ensures a crystal is always stolen
         crystals = 1
     attacker.crystals += crystals  # Gives player crystals
@@ -48,12 +44,14 @@ def get_pickpocket_crystals(attacker, defender):
 def get_action_cost(entity, action):
     # Standard Weapon Cost
     low_stat_mod = 1
-    if "Might" not in entity.status:
-        if action[0] == entity.actions[0][0]:
-            if action[1] == 0:
+    if action[0] == entity.actions[0][0]:
+        if action[1] == 0:
+            if "Might" not in entity.status:
                 entity.stamina -= int(entity.level * 1.75)
-            elif action[1] == 1:
-                entity.mana -= int(entity.level * 1.75)
+            else:
+                entity.power += int(entity.level * 1.75)
+        elif action[1] == 1:
+            entity.mana -= int(entity.level * 1.75)
             # else:
             # Code for Status-Type Standard weapons will go here, if it ever exists
 
@@ -64,6 +62,8 @@ def get_action_cost(entity, action):
         if action[0] == "Axe":
             if "Might" not in entity.status:
                 entity.stamina -= int(entity.level * 1.75 * 5)
+            else:
+                entity.power += int(entity.level * 1.75)
         elif action[0] == "Crossbow":
             entity.stamina -= int(entity.level * 1.75 * 2)
         elif action[0] == "Dash":
@@ -138,7 +138,7 @@ def get_action_cost(entity, action):
         entity.mana = 0
         low_stat_mod = 0.5
 
-    if "Might" in entity.status:  # Disables Might after skipping stamina reduction
+    if "Might" in entity.status:  # Disables Might
         entity.status.remove("Might")
 
     return entity, low_stat_mod
@@ -160,6 +160,8 @@ def get_action_effects(attacker, defender, action, attacker_mods):
             attacker.power += attacker.level
             attacker.speed += attacker.level
             print(attacker.name + "'s Crossbow makes their arrows sharper and faster!")
+
+        attacker_mods[2] = 0.75
 
     # Poison
     elif action[0] == "Poison":
@@ -211,7 +213,7 @@ def get_action_effects(attacker, defender, action, attacker_mods):
         else:
             success = 1
         if success == 1:
-            print(attacker.name + "'s Might prevents further exhaustion next turn!")
+            print(attacker.name + "'s Might gives them adrenaline and boosts attacks!")
             attacker.status.append("Might")
         else:
             print(attacker.name + "'s Ability failed!")
@@ -425,7 +427,7 @@ def turn_action(attacker, defender, action):
     # Handles setting multipliers
     attacker_multiplier = 1
     defender_multiplier = 1
-    attacker_mods[0] = get_critical(attacker, action)
+    attacker_mods[0] = get_critical(attacker)
     action_cost = get_action_cost(attacker, attacker.actions[action])
     attacker = action_cost[0]
     attacker_mods[1] = action_cost[1]
