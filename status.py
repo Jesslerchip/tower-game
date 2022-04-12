@@ -1,7 +1,9 @@
 # Handles poison damage
 def get_poison_damage(player, mob):
     if "Psn" in mob.status:  # Normal Poison
-        damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.08) + 1
+        damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.08)
+        if damage < 1:
+            damage = 1
         mob.hp -= damage
         mob.counter[0] -= 1  # Subtract from Poison counter
         print(mob.name + " took " + str(damage) + " Poison damage!")
@@ -9,7 +11,9 @@ def get_poison_damage(player, mob):
             mob.status.remove("Psn")
             print("Poison removed!")
     elif "CritPsn" in mob.status:  # Critical Poison
-        damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.16) + 1
+        damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.16)
+        if damage < 1:
+            damage = 1
         mob.hp -= damage
         mob.counter[0] -= 1  # Subtract from Poison counter
         print(mob.name + " took " + str(damage) + " Poison damage!")
@@ -17,7 +21,9 @@ def get_poison_damage(player, mob):
             mob.status.remove("CritPsn")
             print("Poison removed!")
     elif "WeakPsn" in mob.status:  # Weak Poison
-        damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.04) + 1
+        damage = int((player.power * (player.level + 1) - (mob.defense * (mob.level + 1) / 2)) * 0.04)
+        if damage < 1:
+            damage = 1
         mob.hp -= damage
         mob.counter[0] -= 1  # Subtract from Poison counter
         print(mob.name + " took " + str(damage) + " Poison damage!")
