@@ -17,7 +17,7 @@ def make_player(name, player_class):
             new_player = entity.Player(name, player_data.healer)
         elif player_class == "thief":
             new_player = entity.Player(name, player_data.thief)
-        elif player_class == "necromage":
+        else:
             new_player = entity.Player(name, player_data.necromage)
 
         new_player.set_stats()

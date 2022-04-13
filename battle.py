@@ -71,11 +71,11 @@ def help_menu(player):
     if player.player_class[0] == "Warrior":
         print(player.actions[2][0] + strings.might_desc)
     elif player.player_class[0] == "Archer":
-        print(player.actions[2][0] + ": Decreases Defense by 2, but doubles Critical chance of next action.")
+        print(player.actions[2][0] + strings.focus_desc)
     elif player.player_class[0] == "Healer":
-        print(player.actions[2][0] + ": Heals the user. Healing is halved after each use. Costs Mana.")
-    else:
-        print(player.actions[2][0] + ": Steals extra crystals, but costs Mana.")
+        print(player.actions[2][0] + strings.potion_desc)
+    elif player.player_class[0] == "Thief":
+        print(player.actions[2][0] + strings.pickpocket_desc)
 
     # Summon
     print("Summon: Opens shop menu.\n")
@@ -115,7 +115,7 @@ def player_turn(player, mob, ritual_mob):
                 turn_complete = True
 
         if action == "summon":
-            summons.summon_menu(player)  # Shop
+            summons.summons_menu(player)  # Shop
         if action == "help":
             help_menu(player)  # Help menu
 
@@ -186,12 +186,12 @@ def get_floor(player, floor):
     # Player goes up
     if will_continue == "up":
         floor += 1
-        print(player.name + " has reached Floor " + str(floor) + ".")
+        print(f"{player.name} has reached Floor {floor}.")
 
     # Player goes down
     elif will_continue == "down":
         floor -= 1
-        print(player.name + " has returned to Floor " + str(floor) + ".")
+        print(f"{player.name} has returned to Floor {floor}.")
 
     return floor
 
@@ -199,12 +199,12 @@ def get_floor(player, floor):
 # Main game loop
 def game(player):
     floor = 1
-    print(player.name + " has reached Floor " + str(floor) + ".")
+    print(f"{player.name} has reached Floor {floor}.")
     while player.hp > 0:
         mob = generate_mob(floor)  # Generates the mob for the floor
         ritual_mob = entity.Mob(floor, ["null", 0, 0, 0, 0, 0, 0, mob_data.ritual_actions])
 
-        print("Level " + str(mob.level) + " " + mob.name + " appeared!")
+        print(f"Level {mob.level} {mob.name} appeared!")
         while mob.hp > 0 and player.hp > 0:  # Checks to ensure neither player nor mob have died
 
             # Sets turn order
@@ -290,7 +290,7 @@ def game(player):
             if (ritual_mob.counter[1] <= 0 or ritual_mob.hp <= 0) and ritual_mob.name != "null":
 
                 # If ritual mob's lifespan is out or if it died
-                print(ritual_mob.name + " has gone back to the world of the undead!")
+                print(f"{ritual_mob.name} has gone back to the world of the undead!")
 
                 # Erase ritual mob with null data
                 ritual_mob = entity.Mob(floor, ["null", 0, 0, 0, 0, 0, 0, mob_data.ritual_actions])
@@ -314,7 +314,7 @@ def game(player):
                 mob.stamina = 0
 
         if mob.hp <= 0:  # Mob is defeated
-            print("Level " + str(mob.level) + " " + mob.name + " was defeated!")
+            print(f"Level {mob.level} {mob.name} was defeated!")
             player = get_crystals_xp(player, mob)
             floor = get_floor(player, floor)
             player.set_stats()
