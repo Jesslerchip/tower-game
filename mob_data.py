@@ -14,6 +14,7 @@ witch = ["Witch", 10, 11, 10, 11, 9, 11, witch_actions]
 grendel = ["Grendel", 5, 5, 10, 13, 7, 20, grendel_actions]
 orc = ["Orc", 16, 6, 10, 8, 16, 8, orc_actions]
 
+# Which mobs appear on which floors
 floor_mobs = [[goblin],  # Floor 1
               [goblin, troll],  # Floor 2
               [goblin, troll, witch],  # Floor 3
