@@ -23,8 +23,7 @@ healer_gear = [healer_slot_1, healer_slot_2]
 
 # Thief Gear
 thief_slot_1 = [("Pocket knife", "Care to do a whittle whittling?", 100),
-                (
-                "Sharp dagger", "A light, sharp weapon. Less damage than a sword, but it doesn't weigh you down.", 100)]
+                ("Sharp dagger", "A light, sharp weapon. Less damage than a sword, but it doesn't weigh you down.",100)]
 thief_slot_2 = ["none"]
 thief_gear = [thief_slot_1, thief_slot_2]
 
@@ -87,4 +86,3 @@ def buy(player, choice):
             player.crystals -= player.gear[choice][player.gear_level[choice]][2]
         else:
             print("You don't have enough crystals!")
-
