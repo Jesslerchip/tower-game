@@ -12,6 +12,7 @@ import summons
 
 # Generates a new mob
 def generate_mob(floor):
+    mob_level = randint(floor - int(floor / 10) + 1, floor)
     mob_class = mob_data.floor_mobs[floor - 1][randint(0, len(mob_data.floor_mobs[floor - 1]) - 1)]
     new_mob = entity.Mob(floor, mob_class)
 
@@ -127,7 +128,11 @@ def mob_turn(attacker, defender):
     while True:
         action = (attacker.actions[randint(0, 2)][0]).lower()
         if action[0] != attacker.last_action:
-            break
+            if attacker.name == "Hellfire Phoenix":
+                if not (action == attacker.actions[1][0] and ("WeakBrn" or "Brn" or "CritBrn") in defender.status):
+                    break
+            else:
+                break
     if action == attacker.actions[0][0].lower():  # Standard Weapon
         turn_results = actions.turn_action(attacker, defender, 0)
     elif action == attacker.actions[1][0].lower():  # Special Weapon
@@ -249,6 +254,7 @@ def game(player):
                     else:
                         ritual_mob = turn_results[1]
 
+                mob.counter[2] += 1  # Increase turns counter
                 ritual_mob.counter[1] -= 1  # Decrease ritual mob's lifespan counter
 
             elif turn_order == 2:  # Mob goes first
@@ -285,7 +291,8 @@ def game(player):
                         ritual_mob = turn_results[0]
                         mob = turn_results[1]
 
-                ritual_mob.counter[1] -= 1  # Decrease ritual mob's lifespan counter
+                    mob.counter[2] += 1  # Increase turns counter
+                    ritual_mob.counter[1] -= 1  # Decrease ritual mob's lifespan counter
 
             if (ritual_mob.counter[1] <= 0 or ritual_mob.hp <= 0) and ritual_mob.name != "null":
 
@@ -298,6 +305,8 @@ def game(player):
             # If mob is poisoned
             if mob.hp > 0 and mob.counter[0] != 0:
                 mob = status.get_poison_damage(player, mob)
+            if player.hp > 0 and player.counter[1] != 0:
+                player = status.get_burn_damage(player)
 
             # Don't allow these values to drop below 0
             if player.mana < 0:

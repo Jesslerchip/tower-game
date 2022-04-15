@@ -28,11 +28,13 @@ def make_player(name, player_class):
         my_label['text'] = "Invalid class."
 
 
-def hit(hp, button):
-    hp = hp - 1
-    if hp <= 0:
+def hit(hp, button, mob):
+    mob.hp -= 1
+    hp.set(hp.get() - 1)
+    if hp.get() <= 0:
         button['state'] = DISABLED
-    return hp
+
+    return hp.get()
 
 
 def battle_gui(player):
@@ -60,7 +62,8 @@ def battle_gui(player):
     m_name_label = Label(battle_main, text="Name: " + new_mob.name, fg="gray11")
     m_name_label.grid(row=1, column=0, sticky=W)
 
-    m_hp_label = Label(battle_main, text="hp: " + str(new_mob.hp) + "/" + str(new_mob.max_hp), fg="gray11")
+    mob_hp_string = StringVar(battle_main, "hp: " + str(new_mob.hp) + "/" + str(new_mob.max_hp))
+    m_hp_label = Label(battle_main, textvariable=mob_hp_string, fg="gray11")
     m_hp_label.grid(row=1, column=2, sticky=W)
 
     m_mana_label = Label(battle_main, text="mana: " + str(new_mob.mana) + "/" + str(new_mob.max_mana), fg="gray11")
@@ -70,7 +73,9 @@ def battle_gui(player):
                             fg="gray11")
     m_stamina_label.grid(row=1, column=4, sticky=W)
 
-    button = Button(battle_main, text="Attack", command=lambda: new_mob.hp == (hit(new_mob.hp, button)))
+    test_hp = IntVar()
+    test_hp.set(10)
+    button = Button(battle_main, text="Attack", command=lambda: test_hp.set(hit(test_hp, button, new_mob)))
     button.grid(row=3, column=2, padx=5, pady=5)
 
     status_label = Label(battle_main, textvariable=new_mob.hp, fg="green")
