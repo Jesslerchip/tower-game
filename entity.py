@@ -1,6 +1,6 @@
 from random import randint
 
-max_xp = [0, 10, 30, 60, 100, 150, 200]  # TODO: Array that sets players exp goals
+max_xp = [0, 10, 30, 60, 100, 150, 200, 250, 300, 400, 500]  # TODO: xp goals for higher floors
 
 
 class Player:  # Creates the player instance
@@ -28,8 +28,8 @@ class Player:  # Creates the player instance
         self.status = []
         self.gear_level = [0, 0, 0]  # Weapon, Special, Armor
 
-        # 0 = Heal counter
-        self.counter = [0]
+        # 0 = Heal counter, 1 = Burn counter
+        self.counter = [0, 0]
 
     def set_stats(self):
         self.hp = (self.player_class[1] + self.perks[1]) * int(pow(self.level, 2) / 2) + 10
@@ -42,7 +42,7 @@ class Player:  # Creates the player instance
         self.max_hp = self.hp
         self.max_mana = self.mana
         self.max_stamina = self.stamina
-        self.counter = [0]
+        self.counter = [0, 0]
 
 
 class Mob:
@@ -63,8 +63,8 @@ class Mob:
         if random_perk == 0:
             self.perks[random_perk] *= 4
 
-        # 0 = Poison counter, 1 = Ritual counter
-        self.counter = [0, 0]
+        # 0 = Poison counter, 1 = Ritual counter, 2 = Turn counter
+        self.counter = [0, 0, 1]
 
         # Stat value = base stat * level
         self.name = stats[0]

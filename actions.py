@@ -83,6 +83,10 @@ def get_action_cost(entity, action):
         elif action[0] == "Toxic Brew":
             entity.mana -= int(entity.level * 1.75)
             entity.stamina -= int(entity.level * 1.75)
+        elif action[0] == "Flutter":
+            entity.stamina -= int(entity.level * 1.75 * 2)
+        elif action[0] == "Devil's Bonfire":
+            entity.mana -= int(entity.level * 1.75 * 2)
 
     # Ability cost
     if action[0] == entity.actions[2][0]:
@@ -115,7 +119,7 @@ def get_action_cost(entity, action):
             entity.speed -= 1 * entity.level
             if entity.speed <= 0:  # Ensures Speed never drops below 1
                 entity.speed = 1
-        elif action[0] == "Rest":
+        elif action[0] == ("Rest" or "Disguise" or "Fairy Dust"):
             entity.mana -= int(entity.level * 1.75)
         elif action[0] == "Magic Broom":
             entity.mana -= int(entity.level * 1.75 * 2)
@@ -125,6 +129,8 @@ def get_action_cost(entity, action):
         elif action[0] == "Skill Swap":
             entity.mana -= int(entity.level * 1.75 * 2)
             entity.stamina -= int(entity.level * 1.75 * 2)
+        elif action[0] == "Hellfire Meteor":
+            entity.hp -= int(entity.level * 1.75)
 
     # Checks if attacker went below stamina or mana minimum
     if entity.stamina >= 0 and entity.mana >= 0:
@@ -413,6 +419,85 @@ def get_action_effects(attacker, defender, action, attacker_mods):
             print(strings.ability_failed.format(attacker.name))
 
         attacker_mods[2] = 0
+
+    elif action[0] == "Flutter":
+        if attacker_mods[0] >= 2:
+            attacker.speed += attacker.level * 2
+        else:
+            attacker.speed += attacker.level
+        print(f"{attacker.name} Fluttered about, increasing their Speed!")
+
+    elif action[0] == "Disguise":
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            attacker_defense = defender.defense
+            defender_defense = attacker.defense
+            attacker.defense = attacker_defense
+            defender.defense = defender_defense
+            print(f"{attacker.name}'s Disguise let it switch its Defense with {defender.name}!")
+        else:
+            print(strings.ability_failed.format(attacker.name))
+
+        attacker_mods[2] = 0
+
+    elif action[0] == "Fairy Dust":
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            defender.defense -= defender.level
+            attacker.hp += defender.level
+            if attacker.hp > attacker.max_hp:
+                attacker.hp = attacker.max_hp
+            print(f"{attacker.name}'s Fairy Dust absorbed {defender.name}'s Defense to regain HP!")
+        else:
+            print(strings.ability_failed.format(attacker.name))
+
+        attacker_mods[2] = 0
+
+    elif action[0] == "Nature's Blessing":
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            power_amount = defender.max_hp - defender.hp
+            defender.hp = defender.max_hp
+            attacker.power += power_amount
+            print(f"Nature's Blessing healed {defender.name} and increased {attacker.name}'s Power by {power_amount}!")
+        else:
+            print(strings.ability_failed.format(attacker.name))
+
+        attacker_mods[2] = 0
+
+    elif action[0] == "Devil's Bonfire":
+        if attacker_mods[0] >= 2 and attacker_mods[1] >= 1:
+            defender.status.append("CritBrn")
+            defender.counter[1] = 6
+        elif (attacker_mods[0] >= 2 and attacker_mods[1] == 0.5) or attacker_mods[1] == 1:
+            defender.status.append("Brn")
+            defender.counter[1] = 4
+        else:
+            defender.status.append("WeakBrn")
+            defender.counter[1] = 2
+        print(f"{attacker.name} lit the Devil's Bonfire and burned {defender.name}!")
+
+    elif action[0] == "Hellfire Meteor":
+        if attacker_mods[1] == 0.5:
+            success = rng(2)
+        else:
+            success = 1
+        if success == 1:
+            attacker_mods[2] = (attacker.counter[2] / 3)
+            if attacker_mods[2] < 1:
+                attacker_mods[2] = 1
+            print(f"{attacker.name} summoned the Hellfire Meteor! Its power depends on the length of the battle!")
+        else:
+            print(strings.ability_failed.format(attacker.name))
 
     return attacker, defender, attacker_mods, ritual_mob
 

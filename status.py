@@ -3,7 +3,7 @@ import strings
 
 # Handles poison damage
 def get_poison_damage(attacker, defender):
-    if "Psn" in attacker.status:  # Normal Poison
+    if "Psn" in defender.status:  # Normal Poison
         damage = int((attacker.power * (attacker.level + 1) - (defender.defense * (defender.level + 1) / 2)) * 0.08)
         if damage < 1:
             damage = 1
@@ -45,5 +45,21 @@ def get_potion_health(entity):
     if entity.hp > entity.max_hp:  # Ensures Healer's hp doesn't exceed their max hp
         entity.hp = entity.max_hp
     print(f"Healed {entity.name} for {heal_amount} HP!")
+
+    return entity
+
+
+# Handles burn damage
+def get_burn_damage(entity):
+    entity.hp -= int(entity.max_hp / 16)
+    print(f"")
+    entity.counter[1] -= 1
+    if entity.counter[1] == 0:
+        if "CritBrn" in entity.status:
+            entity.status.remove("CritBrn")
+        if "Brn" in entity.status:
+            entity.status.remove("Brn")
+        if "WeakBrn" in entity.status:
+            entity.status.remove("WeakBrn")
 
     return entity
