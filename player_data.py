@@ -20,3 +20,5 @@ archer = ["Archer", 10, 6, 14, 13, 10, 12, archer_actions, archer_gear]
 healer = ["Healer", 15, 12, 8, 8, 12, 10, healer_actions, healer_gear]
 thief = ["Thief", 8, 10, 13, 12, 7, 15, thief_actions, thief_gear]
 necromage = ["Necromage", 8, 19, 8, 8, 10, 12, necromage_actions, [necromage_gear]]
+
+class_list = [warrior, archer, healer, thief, necromage]
