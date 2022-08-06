@@ -12,7 +12,7 @@ import summons
 
 # Generates a new mob
 def generate_mob(floor):
-    mob_level = randint(floor - int(floor / 10) + 1, floor)
+    # mob_level = randint(floor - int(floor / 10) + 1, floor)
     mob_class = mob_data.floor_mobs[floor - 1][randint(0, len(mob_data.floor_mobs[floor - 1]) - 1)]
     new_mob = entity.Mob(floor, mob_class)
 
